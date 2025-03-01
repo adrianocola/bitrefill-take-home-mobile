@@ -1,0 +1,57 @@
+import dayjs from 'dayjs';
+import {eq, sql} from 'drizzle-orm';
+import {useLiveQuery} from 'drizzle-orm/expo-sqlite';
+
+import {dbDrizzle} from './DrizzleDb';
+import initialData from './initialTransactions.json';
+import {Transaction, transactions} from './schema';
+
+type TransactionData = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>;
+
+export async function initializeTransactions() {
+  const db = dbDrizzle.getDbInstance();
+
+  const result = db
+    .select({count: sql<number>`COUNT(*)`})
+    .from(transactions)
+    .get();
+
+  if (result && result.count > 0) return;
+
+  const initialTransactions = initialData.transactions.map(transaction => ({
+    ...transaction,
+    id: undefined,
+    date: dayjs(transaction.date, 'YYYY-MM-DD').toDate(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }));
+
+  return db.insert(transactions).values(initialTransactions);
+}
+
+export async function addTransaction(transaction: TransactionData) {
+  const db = dbDrizzle.getDbInstance();
+  return db.insert(transactions).values({
+    ...transaction,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+}
+
+export async function updateTransaction(id: number, transaction: Partial<TransactionData>) {
+  const db = dbDrizzle.getDbInstance();
+  return db
+    .update(transactions)
+    .set({
+      ...transaction,
+      updatedAt: new Date(),
+    })
+    .where(eq(transactions.id, id));
+}
+
+export function useTransaction(id: number) {
+  const db = dbDrizzle.getDbInstance();
+  const {data} = useLiveQuery(db.select().from(transactions).where(eq(transactions.id, id)));
+
+  return data;
+}

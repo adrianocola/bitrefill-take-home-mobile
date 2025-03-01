@@ -2,6 +2,7 @@
 module.exports = {
   extends: ['expo', 'prettier'],
   plugins: ['import', 'prettier'],
+  ignorePatterns: ['node_modules/', 'babel.config.js', 'metro.config.js', 'src/db/drizzle'],
   rules: {
     'react/display-name': 'off',
     'prettier/prettier': 'error',

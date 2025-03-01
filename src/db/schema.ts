@@ -5,8 +5,8 @@ export const transactions = sqliteTable('transactions', {
   createdAt: integer('created_at', {mode: 'timestamp'}).notNull(),
   updatedAt: integer('updated_at', {mode: 'timestamp'}).notNull(),
   coin: text('coin').notNull(),
-  quantity: integer('quantity').notNull(), // stored with a 10^8 precision (good enough for this)
-  pricePerCoin: integer('price_per_coin').notNull(), // in cents
+  quantity: integer('quantity').notNull(), // stored with a 10^8 precision
+  pricePerCoin: integer('price_per_coin').notNull(), // stored with a 10^4 precision
   type: text('type').notNull(), // buy or sell
   date: integer('date', {mode: 'timestamp'}).notNull(),
 });

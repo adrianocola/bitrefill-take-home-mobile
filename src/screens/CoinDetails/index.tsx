@@ -1,16 +1,20 @@
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {Text} from 'react-native-ui-lib';
 
 import {Screen} from '@/components/ui/Screen';
-import {ThemedText} from '@/components/ui/ThemedText';
 
-export default function TabTwoScreen() {
+interface CoinDetailsScreenProps {
+  coinId?: string;
+}
+
+export function CoinDetailsScreen({coinId}: CoinDetailsScreenProps) {
   return (
     <Screen>
       <ScrollView>
         <SafeAreaView>
           <View style={styles.titleContainer}>
-            <ThemedText type="title">Explore</ThemedText>
+            <Text>Coin: {coinId ?? 'N/A'}</Text>
           </View>
         </SafeAreaView>
       </ScrollView>

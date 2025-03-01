@@ -3,9 +3,14 @@ import {useFonts} from 'expo-font';
 import {Stack} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {StatusBar} from 'expo-status-bar';
+import {KeyboardProvider} from 'react-native-keyboard-controller';
+import {Colors} from 'react-native-ui-lib';
+import ToastManager from 'toastify-react-native';
 
 import 'react-native-reanimated';
 import {DatabaseProvider} from '@/db/DatabaseProvider';
+
+import '@/theme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,13 +30,30 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DarkTheme}>
-      <DatabaseProvider onInit={onDbInit}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{headerShown: false}} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </DatabaseProvider>
+      <KeyboardProvider>
+        <DatabaseProvider onInit={onDbInit}>
+          <Stack>
+            <Stack.Screen name="index" options={{headerShown: false}} />
+            <Stack.Screen
+              name="coin/[coinId]"
+              options={{
+                headerBackTitle: 'back',
+                headerTintColor: Colors.$textDefault,
+              }}
+            />
+            <Stack.Screen
+              name="transaction/[transactionId]"
+              options={{
+                headerTitle: 'Add Transaction',
+                headerBackTitle: 'back',
+                headerTintColor: Colors.$textDefault,
+              }}
+            />
+          </Stack>
+          <ToastManager />
+          <StatusBar style="auto" />
+        </DatabaseProvider>
+      </KeyboardProvider>
     </ThemeProvider>
   );
 }

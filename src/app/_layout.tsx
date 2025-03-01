@@ -32,21 +32,22 @@ export default function RootLayout() {
     <ThemeProvider value={DarkTheme}>
       <KeyboardProvider>
         <DatabaseProvider onInit={onDbInit}>
-          <Stack>
+          <Stack
+            screenOptions={{
+              headerBackTitle: 'back',
+              headerTintColor: Colors.$textDefault,
+            }}>
             <Stack.Screen name="index" options={{headerShown: false}} />
-            <Stack.Screen
-              name="coin/[coinId]"
-              options={{
-                headerBackTitle: 'back',
-                headerTintColor: Colors.$textDefault,
-              }}
-            />
             <Stack.Screen
               name="transaction/[transactionId]"
               options={{
                 headerTitle: 'Add Transaction',
-                headerBackTitle: 'back',
-                headerTintColor: Colors.$textDefault,
+              }}
+            />
+            <Stack.Screen
+              name="debug"
+              options={{
+                headerTitle: 'Debug',
               }}
             />
           </Stack>

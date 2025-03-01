@@ -14,10 +14,6 @@ import UsdtSvg from '@/assets/icons/crypto/usdt.svg';
 import XrpSvg from '@/assets/icons/crypto/xrp.svg';
 import {CryptosEnum} from '@/constants/Cryptos';
 
-interface CryptoIconProps extends SvgProps {
-  crypto: CryptosEnum;
-}
-
 const cryptoIconsMap: Record<CryptosEnum, React.FC<SvgProps>> = {
   [CryptosEnum.BTC]: BtcSvg,
   [CryptosEnum.ETH]: EthSvg,
@@ -32,8 +28,13 @@ const cryptoIconsMap: Record<CryptosEnum, React.FC<SvgProps>> = {
   [CryptosEnum.USDC]: UsdcSvg,
 };
 
-export const IconCrypto = ({crypto, ...props}: CryptoIconProps) => {
+interface CryptoIconProps extends SvgProps {
+  crypto: CryptosEnum;
+  size?: number;
+}
+
+export const IconCrypto = ({crypto, size, ...props}: CryptoIconProps) => {
   const IconComponent = cryptoIconsMap[crypto];
 
-  return <IconComponent width={32} height={32} {...props} />;
+  return <IconComponent width={size ?? 32} height={size ?? 32} {...props} />;
 };

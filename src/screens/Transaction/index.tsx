@@ -52,7 +52,7 @@ export function TransactionScreen({transactionId}: TransactionScreenProps) {
 
     const result = await addTransaction({
       coin,
-      quantity: parseFloat(quantity),
+      quantity: (type === TransactionTypeEnum.BUY ? 1 : -1) * parseFloat(quantity),
       pricePerCoin: parseFloat(quantity),
       type,
       date: tDate,

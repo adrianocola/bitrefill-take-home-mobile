@@ -1,4 +1,4 @@
-import {MAX_INTEGER, NUMBER_PRECISION} from '@/constants/Consts';
+import {NUMBER_MAX, NUMBER_PRECISION} from '@/constants/Consts';
 
 const floatRegex = /^\d+(\.\d+)?$/;
 
@@ -13,9 +13,9 @@ export const validateMaxNumber = {
     const [int] = value.split('.');
     console.log(int);
 
-    return parseInt(int, 10) < MAX_INTEGER;
+    return parseInt(int, 10) < NUMBER_MAX;
   },
-  message: `Maximum number: ${MAX_INTEGER}`,
+  message: `Maximum number: ${NUMBER_MAX}`,
 };
 
 export const validateMaxPrecision = {

@@ -1,36 +1,46 @@
-import {ScrollView, StyleSheet, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Text} from 'react-native-ui-lib';
+import {useCallback} from 'react';
+import {FlatList, ListRenderItem, StyleSheet} from 'react-native';
+import {View} from 'react-native-ui-lib';
 
 import {Screen} from '@/components/ui/Screen';
+import {CryptosEnum} from '@/constants/Cryptos';
+import {useTransactionsIdsByCoinPaginated} from '@/db/Transaction';
+import {CoinBalanceCard} from '@/screens/CoinDetails/CoinBalanceCard';
+import {TransactionItem} from '@/screens/CoinDetails/TransactionItem';
 
 interface CoinDetailsScreenProps {
-  coinId?: string;
+  coin: CryptosEnum;
 }
 
-export function CoinDetailsScreen({coinId}: CoinDetailsScreenProps) {
+export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
+  const {transactionsIds} = useTransactionsIdsByCoinPaginated(coin);
+
+  const keyExtractor = useCallback((item: number) => `${item}`, []);
+
+  const renderItem: ListRenderItem<number> = useCallback(
+    ({item}) => <TransactionItem transactionId={item} />,
+    [],
+  );
+
   return (
     <Screen>
-      <ScrollView>
-        <SafeAreaView>
-          <View style={styles.titleContainer}>
-            <Text>Coin: {coinId ?? 'N/A'}</Text>
-          </View>
-        </SafeAreaView>
-      </ScrollView>
+      <View paddingH-20 flex>
+        <View paddingV-20>
+          <CoinBalanceCard coin={coin} />
+        </View>
+        <FlatList
+          data={transactionsIds}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          contentContainerStyle={styles.listContent}
+        />
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  listContent: {
+    paddingBottom: 100,
   },
 });

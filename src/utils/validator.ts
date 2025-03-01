@@ -11,7 +11,6 @@ export const validateMaxNumber = {
   validator: (value?: string) => {
     if (!value) return false;
     const [int] = value.split('.');
-    console.log(int);
 
     return parseInt(int, 10) < NUMBER_MAX;
   },

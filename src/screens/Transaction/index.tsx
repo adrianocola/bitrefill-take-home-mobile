@@ -1,7 +1,7 @@
 import FeatherIcon from '@expo/vector-icons/Feather';
 import dayjs from 'dayjs';
 import {useNavigation} from 'expo-router';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {
@@ -16,7 +16,7 @@ import {Toast} from 'toastify-react-native';
 
 import {CoinSelector} from '@/components/CoinSelector';
 import {Screen} from '@/components/ui/Screen';
-import {CryptosEnum} from '@/constants/Cryptos';
+import {CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
 import {addTransaction, TransactionTypeEnum} from '@/db/Transaction';
 import {validateIsNumber, validateMaxNumber, validateMaxPrecision} from '@/utils/validator';
 
@@ -50,23 +50,26 @@ export function TransactionScreen({transactionId}: TransactionScreenProps) {
       .set('second', time.getSeconds())
       .toDate();
 
-    const result = await addTransaction({
+    await addTransaction({
       coin,
       quantity: (type === TransactionTypeEnum.BUY ? 1 : -1) * parseFloat(quantity),
       pricePerCoin: parseFloat(quantity),
       type,
       date: tDate,
     });
-    console.log(result);
     navigation.goBack();
     Toast.success('Transaction saved!');
-
-    // TODO show confirmation, clear fields or go back?
   };
 
   const onUpdateType = (index: number) => {
     setType(index === 0 ? TransactionTypeEnum.BUY : TransactionTypeEnum.SELL);
   };
+
+  useEffect(() => {
+    if (!coin) return;
+
+    setPricePerCoin(`${CryptoUsdPrices[coin]}`);
+  }, [coin]);
 
   return (
     <Screen>

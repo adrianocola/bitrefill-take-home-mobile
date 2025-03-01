@@ -9,11 +9,11 @@ import {IconCrypto} from '@/components/ui/IconCrypto';
 import {Screen} from '@/components/ui/Screen';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
 import {Cryptos, CryptoUsdPrices} from '@/constants/Cryptos';
-import {useTransactionsGroupedByCoin} from '@/db/Transaction';
+import {useTransactionsQuantityGroupedByCoin} from '@/db/Transaction';
 import {formatCurrency} from '@/utils/number';
 
 export function HomeScreen() {
-  const transactionsGroupedByCoin = useTransactionsGroupedByCoin();
+  const transactionsGroupedByCoin = useTransactionsQuantityGroupedByCoin();
   const myCoins = useMemo(() => {
     return transactionsGroupedByCoin
       .map(data => ({
@@ -88,7 +88,7 @@ export function HomeScreen() {
       </ScrollView>
       <FloatingButton
         visible
-        button={{label: 'New Transaction', onPress: navigateToNewTransaction}}
+        button={{label: 'Add Transaction', onPress: navigateToNewTransaction}}
       />
     </Screen>
   );

@@ -37,11 +37,12 @@ export function DebugScreen() {
               <Chip key={item.coin} label={`${item.coin}: ${item.count}`} />
             ))}
           </View>
+          <Text text50>Add random transactions:</Text>
           {counts.map(count => (
             <Button
               key={count}
               marginT-20
-              label={`Add Random ${formatNumber(count)}`}
+              label={formatNumber(count)}
               animateLayout
               onPress={() => onInsertRandomTransactions(count)}
             />

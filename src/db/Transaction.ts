@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import dayjs from 'dayjs';
 import {count, desc, eq, sql, sum} from 'drizzle-orm';
 import {useLiveQuery} from 'drizzle-orm/expo-sqlite';
+import {useCallback, useEffect, useState} from 'react';
 
 import {NUMBER_PRECISION} from '@/constants/Consts';
 import {CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
@@ -145,7 +146,7 @@ export function useTransactionsByCoin(coin: CryptosEnum) {
   return processTransactionsListFromDb(data);
 }
 
-export function useTransactionsGroupedByCoin() {
+export function useTransactionsQuantityGroupedByCoin() {
   const db = dbDrizzle.getDbInstance();
   const {data} = useLiveQuery(
     db
@@ -164,6 +165,22 @@ export function useTransactionsGroupedByCoin() {
   }));
 }
 
+export function useTransactionsQuantityByCoin(coin: CryptosEnum) {
+  const db = dbDrizzle.getDbInstance();
+
+  const {data} = useLiveQuery(
+    db
+      .select({
+        totalQuantity: sum(transactions.quantity),
+      })
+      .from(transactions)
+      .where(eq(transactions.coin, coin))
+      .groupBy(transactions.coin),
+  );
+
+  return fromDBValue(data[0]?.totalQuantity ?? 0);
+}
+
 export function useTransactionsCountGroupedByCoin() {
   const db = dbDrizzle.getDbInstance();
   const {data} = useLiveQuery(
@@ -178,4 +195,33 @@ export function useTransactionsCountGroupedByCoin() {
   );
 
   return data;
+}
+
+export function useTransactionsIdsByCoinPaginated(coin: CryptosEnum, pageSize = 20) {
+  const [transactionsIds, setTransactionsIds] = useState<number[]>([]);
+
+  const nextPage = useCallback(() => {
+    console.log(coin);
+  }, [coin]);
+
+  const reset = useCallback(async () => {
+    const db = dbDrizzle.getDbInstance();
+
+    const records = await db
+      .select({
+        id: transactions.id,
+      })
+      .from(transactions)
+      .where(eq(transactions.coin, coin))
+      .orderBy(desc(transactions.date))
+      .limit(pageSize);
+
+    setTransactionsIds(records.map(t => t.id));
+  }, [coin, pageSize]);
+
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
+  return {transactionsIds, nextPage, reset};
 }

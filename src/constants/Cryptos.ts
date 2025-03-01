@@ -16,6 +16,7 @@ export interface CryptoData {
   name: string;
   symbol: CryptosEnum;
   color: string;
+  textColor?: string;
 }
 
 export const CryptoUsdPrices: Record<CryptosEnum, number> = {
@@ -56,17 +57,20 @@ export const Cryptos: Record<CryptosEnum, CryptoData> = {
   [CryptosEnum.LTC]: {
     name: 'Litecoin',
     symbol: CryptosEnum.LTC,
-    color: '#bfbbbb',
+    color: 'white',
+    textColor: 'black',
   },
   [CryptosEnum.BNB]: {
     name: 'BNB',
     symbol: CryptosEnum.BNB,
     color: '#f3ba2f',
+    textColor: 'black',
   },
   [CryptosEnum.SOL]: {
     name: 'Solana',
     symbol: CryptosEnum.SOL,
     color: '#66f9a1',
+    textColor: 'black',
   },
   [CryptosEnum.DOGE]: {
     name: 'Dogecoin',

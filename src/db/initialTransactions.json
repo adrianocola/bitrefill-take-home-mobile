@@ -20,7 +20,7 @@
     "id": "3",
     "coin": "ADA",
     "type": "sell",
-    "quantity": 100,
+    "quantity": -100,
     "pricePerCoin": 1.2,
     "date": "2023-03-05"
   },
@@ -28,7 +28,7 @@
     "id": "4",
     "coin": "BTC",
     "type": "sell",
-    "quantity": 0.005,
+    "quantity": -0.005,
     "pricePerCoin": 55000,
     "date": "2023-03-10"
   },
@@ -52,7 +52,7 @@
     "id": "7",
     "coin": "ETH",
     "type": "sell",
-    "quantity": 0.25,
+    "quantity": -0.25,
     "pricePerCoin": 1600,
     "date": "2023-03-25"
   },
@@ -68,7 +68,7 @@
     "id": "9",
     "coin": "XRP",
     "type": "sell",
-    "quantity": 250,
+    "quantity": -250,
     "pricePerCoin": 0.9,
     "date": "2023-04-01"
   },
@@ -84,7 +84,7 @@
     "id": "11",
     "coin": "LTC",
     "type": "sell",
-    "quantity": 5,
+    "quantity": -5,
     "pricePerCoin": 210,
     "date": "2023-04-10"
   },

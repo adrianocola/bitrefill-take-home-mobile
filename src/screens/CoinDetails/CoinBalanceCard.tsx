@@ -1,7 +1,8 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Card, Text, View} from 'react-native-ui-lib';
+import {Colors, Text, View} from 'react-native-ui-lib';
 
+import {GradientCard} from '@/components/GradientCard';
 import {IconCrypto} from '@/components/ui/IconCrypto';
 import {Cryptos, CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
 import {useTransactionsQuantityByCoin} from '@/db/Transaction';
@@ -15,9 +16,19 @@ export const CoinBalanceCard = ({coin}: CoinBalanceCardProps) => {
   const totalQuantity = useTransactionsQuantityByCoin(coin);
   const cryptoData = Cryptos[coin];
   return (
-    <Card center padding-20 backgroundColor={cryptoData.color} style={styles.container}>
+    <GradientCard
+      center
+      padding-20
+      backgroundColor={cryptoData.color}
+      style={styles.container}
+      color="rgba(255,255,255,0.25)">
       <View absH style={styles.iconContainer}>
-        <IconCrypto crypto={coin} size={120} style={styles.icon} color="black" />
+        <IconCrypto
+          crypto={coin}
+          size={120}
+          logoOnly
+          color={cryptoData.textColor ?? Colors.white}
+        />
       </View>
       <View gap-8 paddingL-100 center>
         <Text text30BL color={cryptoData.textColor}>
@@ -27,7 +38,7 @@ export const CoinBalanceCard = ({coin}: CoinBalanceCardProps) => {
           {totalQuantity} {coin}
         </Text>
       </View>
-    </Card>
+    </GradientCard>
   );
 };
 
@@ -38,9 +49,5 @@ const styles = StyleSheet.create({
   iconContainer: {
     opacity: 0.5,
     left: 10,
-  },
-  icon: {
-    backgroundColor: 'black',
-    borderRadius: 100,
   },
 });

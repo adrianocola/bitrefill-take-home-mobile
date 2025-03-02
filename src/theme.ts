@@ -3,7 +3,7 @@ import {Colors, TextFieldProps, ThemeManager} from 'react-native-ui-lib';
 Colors.setScheme('dark');
 
 ThemeManager.setComponentTheme('TextField', (props: TextFieldProps) => ({
-  style: [
+  fieldStyle: [
     {
       borderWidth: 1,
       borderColor: 'white',
@@ -13,7 +13,7 @@ ThemeManager.setComponentTheme('TextField', (props: TextFieldProps) => ({
       paddingBottom: 15,
       backgroundColor: Colors.$backgroundNeutralLight,
     },
-    props.style,
+    props.fieldStyle,
   ],
   validationMessageStyle: [{marginTop: 5}, props.validationMessageStyle],
 }));

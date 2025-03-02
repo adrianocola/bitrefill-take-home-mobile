@@ -1,4 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import dayjs from 'dayjs';
 import React from 'react';
 import {Colors, Text, View} from 'react-native-ui-lib';
 
@@ -21,6 +22,7 @@ export const TransactionItem = ({transactionId}: TransactionItemProps) => {
     <View row padding-10 centerV marginV-10 br20 spread bg-$backgroundElevated>
       <View>
         <MaterialIcons name={isBuy ? 'call-received' : 'call-made'} color={textColor} size={24} />
+        <Text $textDisabled>{dayjs(transaction.date).format('l LT')}</Text>
       </View>
       <View right>
         <Text text70BL color={textColor}>

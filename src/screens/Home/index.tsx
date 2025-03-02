@@ -3,8 +3,9 @@ import {Link, router} from 'expo-router';
 import React from 'react';
 import {ScrollView, TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Avatar, Card, Colors, FloatingButton, Text, View} from 'react-native-ui-lib';
+import {Avatar, Colors, FloatingButton, Text, View} from 'react-native-ui-lib';
 
+import {GradientCard} from '@/components/GradientCard';
 import {IconCrypto} from '@/components/ui/IconCrypto';
 import {Screen} from '@/components/ui/Screen';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
@@ -27,24 +28,24 @@ export function HomeScreen() {
 
   return (
     <Screen>
-      <View row centerV spread padding-20 style={{paddingTop: top}}>
+      <View row centerV spread padding-20 paddingB-10 style={{paddingTop: top}}>
         <View row centerV gap-10>
-          <Avatar source={require('@/assets/images/dwight.jpg')} size={48} />
-          <Text text50>Dwight Schrute</Text>
+          <Avatar source={require('@/assets/images/dwight.jpg')} size={40} />
+          <Text text70>Dwight Schrute</Text>
         </View>
         <Link asChild href="/debug">
           <TouchableOpacity hitSlop={10}>
-            <FontAwesomeIcons name="bug" size={20} color={Colors.$textDisabled} />
+            <FontAwesomeIcons name="bug" size={20} color={Colors.$textDanger} />
           </TouchableOpacity>
         </Link>
       </View>
       <ScrollView>
         <View padding-20 paddingT-0>
-          <Card center marginV-20 paddingV-20 paddingH-20 gap-10>
+          <GradientCard center marginV-20 paddingV-20 paddingH-20 gap-10>
             <Text text30BO>{formatCurrency(totalBalance)}</Text>
             <CryptoLine coinsWithBalance={myCoins} />
-          </Card>
-          <View gap-16>
+          </GradientCard>
+          <View gap-20>
             {myCoins.map(item => (
               <Link
                 key={item.coin}

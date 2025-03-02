@@ -1,14 +1,14 @@
 import FeatherIcon from '@expo/vector-icons/Feather';
 import dayjs from 'dayjs';
-import {useNavigation} from 'expo-router';
 import React, {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
+import {KeyboardAvoidingView, KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {
-  Button,
   Colors,
   DateTimePicker,
+  FloatingButton,
   SegmentedControl,
+  Text,
   TextField,
   View,
 } from 'react-native-ui-lib';
@@ -16,7 +16,7 @@ import {Toast} from 'toastify-react-native';
 
 import {CoinSelector} from '@/components/CoinSelector';
 import {Screen} from '@/components/ui/Screen';
-import {CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
+import {Cryptos, CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
 import {addTransaction, TransactionTypeEnum} from '@/db/Transaction';
 import {validateIsNumber, validateMaxNumber, validateMaxPrecision} from '@/utils/validator';
 
@@ -24,12 +24,11 @@ import {FormLabel} from './FormLabel';
 
 interface TransactionScreenProps {
   transactionId?: string;
-  coin?: CryptosEnum;
+  initialCoin?: CryptosEnum;
 }
 
-export function TransactionScreen({transactionId}: TransactionScreenProps) {
-  const navigation = useNavigation();
-  const [coin, setCoin] = useState<CryptosEnum>();
+export function TransactionScreen({transactionId, initialCoin}: TransactionScreenProps) {
+  const [coin, setCoin] = useState<CryptosEnum | undefined>(initialCoin);
   const [quantity, setQuantity] = useState('');
   const [pricePerCoin, setPricePerCoin] = useState('');
   const [type, setType] = useState<TransactionTypeEnum>(TransactionTypeEnum.BUY);
@@ -72,96 +71,112 @@ export function TransactionScreen({transactionId}: TransactionScreenProps) {
 
   return (
     <Screen>
-      <KeyboardAwareScrollView contentContainerStyle={styles.content}>
-        <View flex padding-20>
-          <SegmentedControl
-            initialIndex={type === TransactionTypeEnum.BUY ? 0 : 1}
-            activeBackgroundColor={type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10}
-            activeColor={Colors.$textDefault}
-            onChangeIndex={onUpdateType}
-            segments={[{label: 'BUY'}, {label: 'SELL'}]}
-          />
-          <View marginT-30 marginB-20>
-            <CoinSelector value={coin} onChange={setCoin} />
-          </View>
-          <FormLabel label="Quantity" />
-          <TextField
-            value={quantity}
-            placeholder={'Number of coins/tokens'}
-            onChangeText={setQuantity}
-            keyboardType={'numeric'}
-            enableErrors
-            validateOnChange
-            onChangeValidity={setQuantityIsValid}
-            validate={[
-              validateIsNumber.validator,
-              validateMaxNumber.validator,
-              validateMaxPrecision.validator,
-            ]}
-            validationMessage={[
-              validateIsNumber.message,
-              validateMaxNumber.message,
-              validateMaxPrecision.message,
-            ]}
-          />
-          <FormLabel label="Price Per Coin" />
-          <TextField
-            value={pricePerCoin}
-            placeholder={'Amount in USD paid per coin/token'}
-            onChangeText={setPricePerCoin}
-            keyboardType={'numeric'}
-            enableErrors
-            validateOnChange
-            onChangeValidity={setPricePerCoinIsValid}
-            validate={[
-              validateIsNumber.validator,
-              validateMaxNumber.validator,
-              validateMaxPrecision.validator,
-            ]}
-            validationMessage={[
-              validateIsNumber.message,
-              validateMaxNumber.message,
-              validateMaxPrecision.message,
-            ]}
-          />
-          <View row gap-10 marginB-20>
-            <View flex>
-              <DateTimePicker
-                value={date}
-                placeholder={'Date'}
-                mode="date"
-                onChange={setDate}
-                maximumDate={new Date()}
-              />
-              <View style={styles.rightIcon}>
-                <FeatherIcon name="calendar" size={20} color={Colors.$textDisabled} />
+      <KeyboardAvoidingView style={{flex: 1}} behavior="padding" keyboardVerticalOffset={70}>
+        <KeyboardAwareScrollView contentContainerStyle={styles.content}>
+          <View flex padding-20>
+            <SegmentedControl
+              initialIndex={type === TransactionTypeEnum.BUY ? 0 : 1}
+              activeBackgroundColor={
+                type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10
+              }
+              activeColor={Colors.$textDefault}
+              onChangeIndex={onUpdateType}
+              segments={[{label: 'BUY'}, {label: 'SELL'}]}
+            />
+            <View marginT-30 marginB-20>
+              <CoinSelector value={coin} onChange={setCoin} />
+            </View>
+            <FormLabel label="Quantity" />
+            <TextField
+              value={quantity}
+              placeholder={'Number of coins'}
+              onChangeText={setQuantity}
+              keyboardType={'numeric'}
+              enableErrors
+              validateOnChange
+              onChangeValidity={setQuantityIsValid}
+              trailingAccessory={coin ? <Text color={Cryptos[coin].color}>{coin}</Text> : undefined}
+              validate={[
+                validateIsNumber.validator,
+                validateMaxNumber.validator,
+                validateMaxPrecision.validator,
+              ]}
+              validationMessage={[
+                validateIsNumber.message,
+                validateMaxNumber.message,
+                validateMaxPrecision.message,
+              ]}
+            />
+            <FormLabel label="Price Per Coin" />
+            <TextField
+              value={pricePerCoin}
+              placeholder={'Price at the time of transaction (in USD)'}
+              onChangeText={setPricePerCoin}
+              keyboardType={'numeric'}
+              enableErrors
+              validateOnChange
+              leadingAccessory={
+                <FeatherIcon
+                  name="dollar-sign"
+                  size={16}
+                  color={Colors.$textNeutral}
+                  style={styles.priceIcon}
+                />
+              }
+              onChangeValidity={setPricePerCoinIsValid}
+              validate={[
+                validateIsNumber.validator,
+                validateMaxNumber.validator,
+                validateMaxPrecision.validator,
+              ]}
+              validationMessage={[
+                validateIsNumber.message,
+                validateMaxNumber.message,
+                validateMaxPrecision.message,
+              ]}
+            />
+            <View row gap-10 marginB-20>
+              <View flex>
+                <DateTimePicker
+                  value={date}
+                  placeholder={'Date'}
+                  mode="date"
+                  onChange={setDate}
+                  maximumDate={new Date()}
+                />
+                <View style={styles.rightIcon}>
+                  <FeatherIcon name="calendar" size={20} color={Colors.$textDisabled} />
+                </View>
+              </View>
+              <View flex>
+                <DateTimePicker
+                  value={time}
+                  placeholder={'Time'}
+                  mode="time"
+                  onChange={setTime}
+                  maximumDate={new Date()}
+                  dateTimeFormatter={date => dayjs(date).format('HH:mm')}
+                />
+                <View style={styles.rightIcon}>
+                  <FeatherIcon name="clock" size={20} color={Colors.$textDisabled} />
+                </View>
               </View>
             </View>
-            <View flex>
-              <DateTimePicker
-                value={time}
-                placeholder={'Time'}
-                mode="time"
-                onChange={setTime}
-                maximumDate={new Date()}
-                dateTimeFormatter={date => dayjs(date).format('HH:mm')}
-              />
-              <View style={styles.rightIcon}>
-                <FeatherIcon name="clock" size={20} color={Colors.$textDisabled} />
-              </View>
-            </View>
           </View>
-          <Button
-            marginT-20
-            label={`Add ${type} transaction`.toUpperCase()}
-            animateLayout
-            disabled={!canSubmit}
-            backgroundColor={type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10}
-            color={Colors.$textDefault}
-            onPress={onAddTransaction}
-          />
-        </View>
-      </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView>
+        <FloatingButton
+          visible
+          bottomMargin={50}
+          fullWidth
+          button={{
+            label: `Add ${type} transaction`.toUpperCase(),
+            animateLayout: true,
+            backgroundColor: type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10,
+            color: Colors.$textDefault,
+            onPress: onAddTransaction,
+          }}
+        />
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
@@ -181,5 +196,8 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  priceIcon: {
+    marginRight: 5,
   },
 });

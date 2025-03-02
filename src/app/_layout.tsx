@@ -1,4 +1,6 @@
 import {DarkTheme, ThemeProvider} from '@react-navigation/native';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 import {useFonts} from 'expo-font';
 import {Stack} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -6,11 +8,13 @@ import {StatusBar} from 'expo-status-bar';
 import {KeyboardProvider} from 'react-native-keyboard-controller';
 import {Colors} from 'react-native-ui-lib';
 import ToastManager from 'toastify-react-native';
-
 import 'react-native-reanimated';
+
 import {DatabaseProvider} from '@/db/DatabaseProvider';
 
 import '@/theme';
+
+dayjs.extend(localizedFormat);
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

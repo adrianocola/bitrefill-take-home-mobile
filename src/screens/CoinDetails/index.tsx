@@ -24,17 +24,18 @@ export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
 
   return (
     <Screen>
-      <View paddingH-20 flex>
-        <View paddingV-20>
-          <CoinBalanceCard coin={coin} />
-        </View>
-        <FlatList
-          data={transactionsIds}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          contentContainerStyle={styles.listContent}
-        />
-      </View>
+      <FlatList
+        data={transactionsIds}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={styles.listContent}
+        contentInsetAdjustmentBehavior="automatic"
+        ListHeaderComponent={
+          <View paddingV-20>
+            <CoinBalanceCard coin={coin} />
+          </View>
+        }
+      />
     </Screen>
   );
 }
@@ -42,5 +43,6 @@ export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
 const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 100,
+    paddingHorizontal: 20,
   },
 });

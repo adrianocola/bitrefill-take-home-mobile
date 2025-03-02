@@ -45,6 +45,13 @@ export default function RootLayout() {
               }}
             />
             <Stack.Screen
+              name="coin/[coinId]"
+              options={{
+                headerBlurEffect: 'regular',
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
               name="debug"
               options={{
                 headerTitle: 'Debug',

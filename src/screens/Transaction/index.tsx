@@ -3,21 +3,14 @@ import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {KeyboardAvoidingView, KeyboardAwareScrollView} from 'react-native-keyboard-controller';
-import {
-  Colors,
-  DateTimePicker,
-  FloatingButton,
-  SegmentedControl,
-  Text,
-  TextField,
-  View,
-} from 'react-native-ui-lib';
+import {Colors, DateTimePicker, FloatingButton, Text, TextField, View} from 'react-native-ui-lib';
 import {Toast} from 'toastify-react-native';
 
 import {CoinSelector} from '@/components/CoinSelector';
 import {Screen} from '@/components/ui/Screen';
 import {Cryptos, CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
 import {addTransaction, TransactionTypeEnum} from '@/db/Transaction';
+import {BuySellSwitch} from '@/screens/Transaction/BuySellSwitch';
 import {validateIsNumber, validateMaxNumber, validateMaxPrecision} from '@/utils/validator';
 
 import {FormLabel} from './FormLabel';
@@ -74,15 +67,7 @@ export function TransactionScreen({transactionId, initialCoin}: TransactionScree
       <KeyboardAvoidingView style={{flex: 1}} behavior="padding" keyboardVerticalOffset={70}>
         <KeyboardAwareScrollView contentContainerStyle={styles.content}>
           <View flex padding-20>
-            <SegmentedControl
-              initialIndex={type === TransactionTypeEnum.BUY ? 0 : 1}
-              activeBackgroundColor={
-                type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10
-              }
-              activeColor={Colors.$textDefault}
-              onChangeIndex={onUpdateType}
-              segments={[{label: 'BUY'}, {label: 'SELL'}]}
-            />
+            <BuySellSwitch value={type} onChange={setType} />
             <View marginT-30 marginB-20>
               <CoinSelector value={coin} onChange={setCoin} />
             </View>

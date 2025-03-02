@@ -1,7 +1,16 @@
-import FontAwesomeIcons from '@expo/vector-icons/FontAwesome';
+import FeatherIcons from '@expo/vector-icons/Feather';
 import {Link, router} from 'expo-router';
 import React from 'react';
-import {ScrollView, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
+import Animated, {
+  clamp,
+  Extrapolation,
+  interpolate,
+  interpolateColor,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
+} from 'react-native-reanimated';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Avatar, Colors, FloatingButton, Text, View} from 'react-native-ui-lib';
 
@@ -16,8 +25,23 @@ import {formatCurrency} from '@/utils/number';
 
 export function HomeScreen() {
   const {top} = useSafeAreaInsets();
+  const animatedRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollOffset = useScrollViewOffset(animatedRef);
 
   const {myCoins, totalBalance} = useBalanceGroupedByCoin();
+
+  const bottomButtonAnimatedStyle = useAnimatedStyle(() => ({
+    bottom: clamp(-scrollOffset.value, -500, 0),
+  }));
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    shadowColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#222222']),
+    borderBottomColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#222222']),
+  }));
+
+  const plusIconAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollOffset.value, [0, 200], [0, 1], Extrapolation.CLAMP),
+  }));
 
   const navigateToNewTransaction = () => {
     router.navigate({
@@ -28,20 +52,30 @@ export function HomeScreen() {
 
   return (
     <Screen>
-      <View row centerV spread padding-20 paddingB-10 style={{paddingTop: top}}>
-        <View row centerV gap-10>
-          <Avatar source={require('@/assets/images/dwight.jpg')} size={40} />
-          <Text text70>Dwight Schrute</Text>
+      <Animated.View style={[styles.header, headerAnimatedStyle]}>
+        <View row centerV spread padding-20 paddingB-10 style={{paddingTop: top}}>
+          <View row centerV gap-10>
+            <Avatar source={require('@/assets/images/dwight.jpg')} size={40} />
+            <Text text70>Dwight Schrute</Text>
+          </View>
+          <Animated.View style={plusIconAnimatedStyle}>
+            <Link
+              asChild
+              href={{
+                pathname: '/transaction/[transactionId]',
+                params: {transactionId: NEW_TRANSACTION_ID},
+              }}>
+              <TouchableOpacity hitSlop={10}>
+                <FeatherIcons name="plus" size={28} color={Colors.$textDefault} />
+              </TouchableOpacity>
+            </Link>
+          </Animated.View>
         </View>
-        <Link asChild href="/debug">
-          <TouchableOpacity hitSlop={10}>
-            <FontAwesomeIcons name="bug" size={20} color={Colors.$textDanger} />
-          </TouchableOpacity>
-        </Link>
-      </View>
-      <ScrollView>
-        <View padding-20 paddingT-0>
-          <GradientCard center marginV-20 paddingV-20 paddingH-20 gap-10>
+      </Animated.View>
+
+      <Animated.ScrollView ref={animatedRef}>
+        <View padding-20 paddingB-100 paddingT-0>
+          <GradientCard center marginV-20 paddingV-20 paddingH-20 gap-10 color="rgba(0,0,0,0.5)">
             <Text text30BO>{formatCurrency(totalBalance)}</Text>
             <CryptoLine coinsWithBalance={myCoins} />
           </GradientCard>
@@ -72,11 +106,38 @@ export function HomeScreen() {
             ))}
           </View>
         </View>
-      </ScrollView>
-      <FloatingButton
-        visible
-        button={{label: 'Add Transaction', onPress: navigateToNewTransaction}}
-      />
+      </Animated.ScrollView>
+      <Animated.View style={[styles.bottomButtonContainer, bottomButtonAnimatedStyle]}>
+        <FloatingButton
+          bottomMargin={50}
+          fullWidth
+          visible
+          button={{label: 'Add Transaction', onPress: navigateToNewTransaction}}
+        />
+      </Animated.View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: 'black',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'black',
+    shadowColor: 'rgb(10, 10, 10)',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 10,
+    elevation: 5,
+    zIndex: 10,
+  },
+  bottomButtonContainer: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+  },
+});

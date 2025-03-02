@@ -52,10 +52,6 @@ export function TransactionScreen({transactionId, initialCoin}: TransactionScree
     Toast.success('Transaction added!');
   };
 
-  const onUpdateType = (index: number) => {
-    setType(index === 0 ? TransactionTypeEnum.BUY : TransactionTypeEnum.SELL);
-  };
-
   useEffect(() => {
     if (!coin) return;
 

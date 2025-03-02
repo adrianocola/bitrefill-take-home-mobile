@@ -4,16 +4,13 @@ import {StyleSheet} from 'react-native';
 import {Card, CardProps} from 'react-native-ui-lib';
 
 interface LaminatedCardProps extends CardProps {
-  color?: string;
+  color: string;
 }
 
 export const GradientCard = ({color, children, ...props}: LaminatedCardProps) => {
   return (
     <Card {...props}>
-      <LinearGradient
-        colors={[color ?? 'rgba(0,0,0,0.8)', 'transparent']}
-        style={styles.background}
-      />
+      <LinearGradient colors={[color, 'transparent']} style={styles.background} />
       {children}
     </Card>
   );

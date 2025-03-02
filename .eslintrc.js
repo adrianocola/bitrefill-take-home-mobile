@@ -2,7 +2,13 @@
 module.exports = {
   extends: ['expo', 'prettier'],
   plugins: ['import', 'prettier'],
-  ignorePatterns: ['node_modules/', 'babel.config.js', 'metro.config.js', 'src/db/drizzle'],
+  ignorePatterns: [
+    'node_modules/',
+    'babel.config.js',
+    'metro.config.js',
+    'expo-env.d.ts',
+    'src/db/drizzle',
+  ],
   settings: {
     'import/resolver': {
       typescript: {

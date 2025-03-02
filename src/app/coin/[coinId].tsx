@@ -9,9 +9,9 @@ import {Cryptos, CryptosEnum} from '@/constants/Cryptos';
 import {CoinDetailsScreen} from '@/screens/CoinDetails';
 
 export default function CryptoRoute() {
-  const {coinId} = useLocalSearchParams<{coinId: CryptosEnum}>();
-
   const navigation = useNavigation();
+
+  const {coinId} = useLocalSearchParams<{coinId: CryptosEnum}>();
 
   useEffect(() => {
     navigation.setOptions({
@@ -24,7 +24,7 @@ export default function CryptoRoute() {
             params: {transactionId: NEW_TRANSACTION_ID, coin: coinId},
           }}>
           <TouchableOpacity>
-            <FeatherIcons name="plus" size={32} color={Colors.$textDefault} />
+            <FeatherIcons name="plus" size={28} color={Colors.$textDefault} />
           </TouchableOpacity>
         </Link>
       ),

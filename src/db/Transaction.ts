@@ -10,12 +10,7 @@ import {getRandomPastDate, randomItem, randomRange} from '@/utils/random';
 
 import {dbDrizzle} from './DrizzleDb';
 import initialData from './initialTransactions.json';
-import {Transaction, transactions} from './schema';
-
-export enum TransactionTypeEnum {
-  BUY = 'buy',
-  SELL = 'sell',
-}
+import {Transaction, transactions, TransactionTypeEnum} from './schema';
 
 const precisionMultiplier = new BigNumber(10).pow(NUMBER_PRECISION);
 
@@ -107,18 +102,22 @@ export async function addTransaction(transaction: TransactionData) {
   });
 }
 
-export async function updateTransaction(id: number, transaction: Partial<TransactionData>) {
+export async function updateTransaction(id: number, transaction: TransactionData) {
   const db = dbDrizzle.getDbInstance();
   return db
     .update(transactions)
     .set({
       ...transaction,
-      quantity: transaction.quantity !== undefined ? toDBValue(transaction.quantity) : undefined,
-      pricePerCoin:
-        transaction.pricePerCoin !== undefined ? toDBValue(transaction.pricePerCoin) : undefined,
+      quantity: toDBValue(transaction.quantity),
+      pricePerCoin: toDBValue(transaction.pricePerCoin),
       updatedAt: new Date(),
     })
     .where(eq(transactions.id, id));
+}
+
+export async function deleteTransaction(id: number) {
+  const db = dbDrizzle.getDbInstance();
+  return db.delete(transactions).where(eq(transactions.id, id));
 }
 
 export async function deleteAllTransactions() {
@@ -130,20 +129,7 @@ export function useTransaction(id: number) {
   const db = dbDrizzle.getDbInstance();
   const {data} = useLiveQuery(db.select().from(transactions).where(eq(transactions.id, id)));
 
-  return processTransactionsListFromDb(data)[0] ?? null;
-}
-
-export function useTransactionsByCoin(coin: CryptosEnum) {
-  const db = dbDrizzle.getDbInstance();
-  const {data} = useLiveQuery(
-    db
-      .select()
-      .from(transactions)
-      .where(eq(transactions.coin, coin))
-      .orderBy(desc(transactions.date)),
-  );
-
-  return processTransactionsListFromDb(data);
+  return processTransactionsListFromDb(data as Transaction[])[0] ?? null;
 }
 
 export function useTransactionsQuantityGroupedByCoin() {

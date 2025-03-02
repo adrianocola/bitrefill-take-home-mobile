@@ -1,5 +1,12 @@
 import {integer, sqliteTable, text} from 'drizzle-orm/sqlite-core';
 
+import {CryptosEnum} from '@/constants/Cryptos';
+
+export enum TransactionTypeEnum {
+  BUY = 'buy',
+  SELL = 'sell',
+}
+
 export const transactions = sqliteTable('transactions', {
   id: integer('id').primaryKey({autoIncrement: true}),
   createdAt: integer('created_at', {mode: 'timestamp'}).notNull(),
@@ -11,4 +18,7 @@ export const transactions = sqliteTable('transactions', {
   date: integer('date', {mode: 'timestamp'}).notNull(),
 });
 
-export type Transaction = typeof transactions.$inferSelect;
+export type Transaction = typeof transactions.$inferSelect & {
+  coin: CryptosEnum;
+  type: TransactionTypeEnum;
+};

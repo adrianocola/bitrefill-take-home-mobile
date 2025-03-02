@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {Colors, Text, View} from 'react-native-ui-lib';
 
-import {TransactionTypeEnum} from '@/db/Transaction';
+import {TransactionTypeEnum} from '@/db/schema';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 

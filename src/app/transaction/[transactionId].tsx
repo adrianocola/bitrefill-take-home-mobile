@@ -7,6 +7,7 @@ import {Colors} from 'react-native-ui-lib';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
 import {CryptosEnum} from '@/constants/Cryptos';
 import {TransactionScreen} from '@/screens/Transaction';
+import {TransactionLoader} from '@/screens/Transaction/TransactionLoader';
 
 export default function TransactionRoute() {
   const navigation = useNavigation();
@@ -16,8 +17,11 @@ export default function TransactionRoute() {
     coin?: CryptosEnum;
   }>();
 
+  const editTransaction = !!transactionId && transactionId !== NEW_TRANSACTION_ID;
+
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: editTransaction ? 'Edit Transaction' : 'Add Transaction',
       headerRight: () => (
         <Link asChild href="/debug">
           <TouchableOpacity hitSlop={10}>
@@ -26,12 +30,11 @@ export default function TransactionRoute() {
         </Link>
       ),
     });
-  }, [navigation]);
+  }, [editTransaction, navigation]);
 
-  return (
-    <TransactionScreen
-      transactionId={transactionId === NEW_TRANSACTION_ID ? undefined : transactionId}
-      initialCoin={coin}
-    />
-  );
+  if (editTransaction) {
+    return <TransactionLoader transactionId={parseInt(transactionId, 10)} />;
+  }
+
+  return <TransactionScreen initialCoin={coin} />;
 }

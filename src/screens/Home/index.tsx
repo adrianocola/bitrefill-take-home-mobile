@@ -20,8 +20,8 @@ import {Screen} from '@/components/ui/Screen';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
 import {Cryptos} from '@/constants/Cryptos';
 import {useBalanceGroupedByCoin} from '@/hooks/useBalanceGroupedByCoin';
-import {CryptoLine} from '@/screens/Home/CryptoLine';
-import {formatCurrency} from '@/utils/number';
+import {CryptoBarChart} from '@/screens/Home/CryptoBarChart';
+import {formatCurrency, formatNumber} from '@/utils/number';
 
 export function HomeScreen() {
   const {top} = useSafeAreaInsets();
@@ -77,7 +77,7 @@ export function HomeScreen() {
         <View padding-20 paddingB-100 paddingT-0>
           <GradientCard center marginV-20 paddingV-20 paddingH-20 gap-10 color="rgba(0,0,0,0.5)">
             <Text text30BO>{formatCurrency(totalBalance)}</Text>
-            <CryptoLine coinsWithBalance={myCoins} />
+            <CryptoBarChart coinsWithBalance={myCoins} />
           </GradientCard>
           <View gap-20>
             {myCoins.map(item => (
@@ -97,7 +97,7 @@ export function HomeScreen() {
                     <View right>
                       <Text text70BL>{formatCurrency(item.balance)}</Text>
                       <Text $textNeutral text80>
-                        {item.totalQuantity} {item.coin}
+                        {formatNumber(item.totalQuantity)} {item.coin}
                       </Text>
                     </View>
                   </View>

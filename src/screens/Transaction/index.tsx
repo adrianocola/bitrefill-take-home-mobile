@@ -1,7 +1,8 @@
 import FeatherIcon from '@expo/vector-icons/Feather';
 import dayjs from 'dayjs';
-import React, {useEffect, useState} from 'react';
-import {StyleSheet} from 'react-native';
+import {useNavigation} from 'expo-router';
+import React, {useState} from 'react';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAvoidingView, KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {Colors, DateTimePicker, FloatingButton, Text, TextField, View} from 'react-native-ui-lib';
 import {Toast} from 'toastify-react-native';
@@ -9,31 +10,59 @@ import {Toast} from 'toastify-react-native';
 import {CoinSelector} from '@/components/CoinSelector';
 import {Screen} from '@/components/ui/Screen';
 import {Cryptos, CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
-import {addTransaction, TransactionTypeEnum} from '@/db/Transaction';
+import {Transaction, TransactionTypeEnum} from '@/db/schema';
+import {addTransaction, deleteTransaction, updateTransaction} from '@/db/Transaction';
 import {BuySellSwitch} from '@/screens/Transaction/BuySellSwitch';
 import {validateIsNumber, validateMaxNumber, validateMaxPrecision} from '@/utils/validator';
 
 import {FormLabel} from './FormLabel';
 
 interface TransactionScreenProps {
-  transactionId?: string;
+  transactionId?: number;
+  transaction?: Transaction;
   initialCoin?: CryptosEnum;
 }
 
-export function TransactionScreen({transactionId, initialCoin}: TransactionScreenProps) {
-  const [coin, setCoin] = useState<CryptosEnum | undefined>(initialCoin);
-  const [quantity, setQuantity] = useState('');
-  const [pricePerCoin, setPricePerCoin] = useState('');
-  const [type, setType] = useState<TransactionTypeEnum>(TransactionTypeEnum.BUY);
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
+export function TransactionScreen({
+  transactionId,
+  transaction,
+  initialCoin,
+}: TransactionScreenProps) {
+  const navigation = useNavigation();
+  const [coin, setCoin] = useState<CryptosEnum | undefined>(transaction?.coin ?? initialCoin);
+  const [quantity, setQuantity] = useState(
+    transaction?.quantity ? Math.abs(transaction?.quantity).toString() : '',
+  );
+  const [pricePerCoin, setPricePerCoin] = useState(() => {
+    if (transaction?.pricePerCoin) return transaction?.pricePerCoin.toString();
+    if (initialCoin) return `${CryptoUsdPrices[initialCoin]}`;
 
-  const [quantityIsValid, setQuantityIsValid] = useState(false);
-  const [pricePerCoinIsValid, setPricePerCoinIsValid] = useState(false);
+    return '';
+  });
+  const [type, setType] = useState<TransactionTypeEnum>(
+    transaction?.type ?? TransactionTypeEnum.BUY,
+  );
+  const [date, setDate] = useState(transaction?.date ?? new Date());
+  const [time, setTime] = useState(transaction?.date ?? new Date());
+
+  const [quantityIsValid, setQuantityIsValid] = useState(!!transactionId);
+  const [pricePerCoinIsValid, setPricePerCoinIsValid] = useState(!!transactionId);
 
   const canSubmit = coin && quantityIsValid && pricePerCoinIsValid && date && time;
 
-  const onAddTransaction = async () => {
+  let buttonColor = type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10;
+  let buttonTextColor = Colors.$textDefault;
+  if (transactionId) {
+    buttonColor = Colors.white;
+    buttonTextColor = Colors.$backgroundNeutral;
+  }
+
+  const onCoinUpdated = (newCoin?: CryptosEnum) => {
+    setCoin(newCoin);
+    setPricePerCoin(newCoin ? `${CryptoUsdPrices[newCoin]}` : '');
+  };
+
+  const onSaveTransaction = async () => {
     if (!canSubmit) return;
 
     const tDate = dayjs(date)
@@ -42,21 +71,30 @@ export function TransactionScreen({transactionId, initialCoin}: TransactionScree
       .set('second', time.getSeconds())
       .toDate();
 
-    await addTransaction({
+    const transactionData = {
       coin,
       quantity: (type === TransactionTypeEnum.BUY ? 1 : -1) * parseFloat(quantity),
-      pricePerCoin: parseFloat(quantity),
+      pricePerCoin: parseFloat(pricePerCoin),
       type,
       date: tDate,
-    });
-    Toast.success('Transaction added!');
+    };
+
+    if (transactionId) {
+      await updateTransaction(transactionId, transactionData);
+    } else {
+      await addTransaction(transactionData);
+    }
+    Toast.success(transactionId ? 'Transaction updated!' : 'Transaction added!');
   };
 
-  useEffect(() => {
-    if (!coin) return;
+  const onDeleteTransaction = async () => {
+    if (!transactionId) return;
 
-    setPricePerCoin(`${CryptoUsdPrices[coin]}`);
-  }, [coin]);
+    // TODO confirm before deleting
+    await deleteTransaction(transactionId);
+    Toast.success('Transaction deleted!');
+    navigation.goBack();
+  };
 
   return (
     <Screen>
@@ -65,7 +103,7 @@ export function TransactionScreen({transactionId, initialCoin}: TransactionScree
           <View flex padding-20>
             <BuySellSwitch value={type} onChange={setType} />
             <View marginT-30 marginB-20>
-              <CoinSelector value={coin} onChange={setCoin} />
+              <CoinSelector value={coin} onChange={onCoinUpdated} />
             </View>
             <FormLabel label="Quantity" />
             <TextField
@@ -143,6 +181,14 @@ export function TransactionScreen({transactionId, initialCoin}: TransactionScree
                 </View>
               </View>
             </View>
+            {!!transactionId && (
+              <TouchableOpacity onPress={onDeleteTransaction}>
+                <View row center gap-5 marginT-20>
+                  <FeatherIcon name="trash" size={20} color={Colors.$textDangerLight} />
+                  <Text $textDangerLight>Delete transaction</Text>
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
         </KeyboardAwareScrollView>
         <FloatingButton
@@ -150,11 +196,12 @@ export function TransactionScreen({transactionId, initialCoin}: TransactionScree
           bottomMargin={50}
           fullWidth
           button={{
-            label: `Add ${type} transaction`.toUpperCase(),
+            label: transactionId ? 'Update transaction' : `Add ${type} transaction`.toUpperCase(),
             animateLayout: true,
-            backgroundColor: type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10,
-            color: Colors.$textDefault,
-            onPress: onAddTransaction,
+            backgroundColor: buttonColor,
+            color: buttonTextColor,
+            disabled: !canSubmit,
+            onPress: onSaveTransaction,
           }}
         />
       </KeyboardAvoidingView>

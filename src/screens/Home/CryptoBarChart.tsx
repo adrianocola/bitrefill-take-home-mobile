@@ -4,7 +4,8 @@ import {Colors, View} from 'react-native-ui-lib';
 
 import {Cryptos} from '@/constants/Cryptos';
 import {CoinsWithBalance} from '@/hooks/useBalanceGroupedByCoin';
-import {CryptoChip} from '@/screens/Home/CryptoChip';
+
+import {CryptoChip} from './CryptoChip';
 
 interface CryptoLineProps {
   coinsWithBalance: CoinsWithBalance[];
@@ -12,7 +13,7 @@ interface CryptoLineProps {
 
 const MAIN_COUNT = 5;
 
-export const CryptoLine = ({coinsWithBalance}: CryptoLineProps) => {
+export const CryptoBarChart = ({coinsWithBalance}: CryptoLineProps) => {
   const {mainCoinsWithBalance, remainingPercentage} = useMemo(() => {
     if (!coinsWithBalance.length) return {mainCoinsWithBalance: [], remainingPercentage: 0};
 

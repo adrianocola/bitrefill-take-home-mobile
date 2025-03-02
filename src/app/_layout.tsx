@@ -62,10 +62,10 @@ export default function RootLayout() {
               }}
             />
           </Stack>
-          <ToastManager />
           <StatusBar style="auto" />
         </DatabaseProvider>
       </KeyboardProvider>
+      <ToastManager theme="dark" />
     </ThemeProvider>
   );
 }

@@ -11,8 +11,13 @@ ThemeManager.setComponentTheme('TextField', (props: TextFieldProps) => ({
       padding: 10,
       paddingTop: 15,
       paddingBottom: 15,
+      backgroundColor: Colors.$backgroundNeutralLight,
     },
     props.style,
   ],
   validationMessageStyle: [{marginTop: 5}, props.validationMessageStyle],
 }));
+
+ThemeManager.setComponentTheme('Button', {
+  'bg-$backgroundInverted': true,
+});

@@ -24,7 +24,7 @@ export function useBalanceGroupedByCoin() {
 
     const withPercentage: CoinsWithBalance[] = withBalance.map(data => ({
       ...data,
-      percentage: data.balance / totalBalance,
+      percentage: (data.balance / totalBalance) * 100,
     }));
 
     return {myCoins: withPercentage, totalBalance};

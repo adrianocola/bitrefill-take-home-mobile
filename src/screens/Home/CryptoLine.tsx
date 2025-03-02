@@ -17,8 +17,11 @@ export const CryptoLine = ({coinsWithBalance}: CryptoLineProps) => {
     if (!coinsWithBalance.length) return {mainCoinsWithBalance: [], remainingPercentage: 0};
 
     const mainCoinsWithBalance = coinsWithBalance.slice(0, MAIN_COUNT);
-    const remainingPercentage =
-      1 - mainCoinsWithBalance.reduce((acc, item) => acc + item.percentage, 0);
+    const mainCoinsTotalPercentage = mainCoinsWithBalance.reduce(
+      (acc, item) => acc + Math.round(item.percentage),
+      0,
+    );
+    const remainingPercentage = Math.max(0, 100 - mainCoinsTotalPercentage);
 
     return {mainCoinsWithBalance, remainingPercentage};
   }, [coinsWithBalance]);
@@ -26,17 +29,17 @@ export const CryptoLine = ({coinsWithBalance}: CryptoLineProps) => {
   if (!mainCoinsWithBalance.length) return null;
 
   return (
-    <View gap-20>
+    <View gap-20 width="100%">
       <View row br100 style={styles.lineContainer}>
         {mainCoinsWithBalance.map((data, i) => (
           <View
             key={data.coin}
-            width={`${data.percentage * 100}%`}
+            width={`${Math.round(data.percentage)}%`}
             height={10}
             backgroundColor={Cryptos[data.coin].color}
           />
         ))}
-        <View width={`${remainingPercentage * 100}%`} height={10} backgroundColor={Colors.grey20} />
+        <View width={`${remainingPercentage}%`} height={10} backgroundColor={Colors.grey20} />
       </View>
       <View row gap-10 center style={styles.chipsContainer}>
         {mainCoinsWithBalance.map((data, i) => (

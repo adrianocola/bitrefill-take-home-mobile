@@ -10,9 +10,11 @@ interface CryptoChipProps {
 }
 
 export const CryptoChip = ({coin, percentage}: CryptoChipProps) => {
+  if (!percentage) return null;
+
   return (
     <Chip
-      label={`${coin ?? 'Other'}: ${Math.round(percentage * 100)}%`}
+      label={`${coin ?? 'Other'}: ${Math.round(percentage)}%`}
       containerStyle={styles.container}
       backgroundColor={coin ? Cryptos[coin].color : Colors.grey20}
       labelStyle={{color: (coin ? Cryptos[coin].textColor : undefined) ?? Colors.white}}

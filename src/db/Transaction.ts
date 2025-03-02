@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js';
 import dayjs from 'dayjs';
 import {count, desc, eq, sql, sum} from 'drizzle-orm';
 import {useLiveQuery} from 'drizzle-orm/expo-sqlite';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 
-import {NUMBER_PRECISION} from '@/constants/Consts';
+import {NUMBER_PRECISION, TRANSACTIONS_PAGE_SIZE} from '@/constants/Consts';
 import {CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
 import {getRandomPastDate, randomItem, randomRange} from '@/utils/random';
 
@@ -197,31 +197,45 @@ export function useTransactionsCountGroupedByCoin() {
   return data;
 }
 
-export function useTransactionsIdsByCoinPaginated(coin: CryptosEnum, pageSize = 20) {
+export function useTransactionsIdsByCoinPaginated(coin: CryptosEnum) {
   const [transactionsIds, setTransactionsIds] = useState<number[]>([]);
+  const pageRef = useRef(0);
+  const fetchingRef = useRef(false);
+  const haveMoreRef = useRef(true);
 
-  const nextPage = useCallback(() => {
-    console.log(coin);
-  }, [coin]);
+  const nextPage = useCallback(
+    async (reset = false) => {
+      if (fetchingRef.current || !haveMoreRef.current) return;
 
-  const reset = useCallback(async () => {
-    const db = dbDrizzle.getDbInstance();
+      fetchingRef.current = true;
 
-    const records = await db
-      .select({
-        id: transactions.id,
-      })
-      .from(transactions)
-      .where(eq(transactions.coin, coin))
-      .orderBy(desc(transactions.date))
-      .limit(pageSize);
+      pageRef.current = reset ? 0 : pageRef.current + 1;
+      const db = dbDrizzle.getDbInstance();
+      const records = await db
+        .select({
+          id: transactions.id,
+        })
+        .from(transactions)
+        .where(eq(transactions.coin, coin))
+        .orderBy(desc(transactions.date))
+        .limit(TRANSACTIONS_PAGE_SIZE)
+        .offset(pageRef.current * TRANSACTIONS_PAGE_SIZE);
 
-    setTransactionsIds(records.map(t => t.id));
-  }, [coin, pageSize]);
+      const ids = records.map(t => t.id);
+
+      setTransactionsIds(
+        reset ? ids : prevTransactionsIds => [...prevTransactionsIds, ...records.map(t => t.id)],
+      );
+      haveMoreRef.current = records.length === TRANSACTIONS_PAGE_SIZE;
+
+      fetchingRef.current = false;
+    },
+    [coin],
+  );
 
   useEffect(() => {
-    reset();
-  }, [reset]);
+    nextPage(true);
+  }, [nextPage]);
 
-  return {transactionsIds, nextPage, reset};
+  return {transactionsIds, haveMore: haveMoreRef.current, nextPage};
 }

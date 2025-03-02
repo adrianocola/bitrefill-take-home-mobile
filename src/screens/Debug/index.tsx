@@ -4,10 +4,15 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {Button, Card, Chip, Text, View} from 'react-native-ui-lib';
 
 import {Screen} from '@/components/ui/Screen';
-import {insertRandomTransactions, useTransactionsCountGroupedByCoin} from '@/db/Transaction';
+import {
+  deleteAllTransactions,
+  initializeTransactions,
+  insertRandomTransactions,
+  useTransactionsCountGroupedByCoin,
+} from '@/db/Transaction';
 import {formatNumber} from '@/utils/number';
 
-const counts = [1, 10, 100, 1_000, 10_000];
+const counts = [1, 10, 100, 1_000];
 
 export function DebugScreen() {
   const transactionsCountByCoin = useTransactionsCountGroupedByCoin();
@@ -23,6 +28,13 @@ export function DebugScreen() {
       'Success',
       `Inserted ${formatNumber(count)} transactions in ${Date.now() - start} ms`,
     );
+  };
+
+  const onResetDB = async () => {
+    const start = Date.now();
+    await deleteAllTransactions();
+    await initializeTransactions();
+    Alert.alert('Success', `DB Cleared in ${Date.now() - start} ms`);
   };
 
   return (
@@ -47,6 +59,13 @@ export function DebugScreen() {
               onPress={() => onInsertRandomTransactions(count)}
             />
           ))}
+          <Button
+            bg-$backgroundDangerHeavy
+            marginT-40
+            label="Reset DB"
+            animateLayout
+            onPress={onResetDB}
+          />
         </View>
       </KeyboardAwareScrollView>
     </Screen>

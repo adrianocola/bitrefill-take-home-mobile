@@ -12,13 +12,13 @@ interface CoinSelectorProps {
 }
 
 export const CoinSelector = React.memo(({value, onChange}: CoinSelectorProps) => {
-  const renderPicker: PickerProps['renderPicker'] = (
+  const renderInput: PickerProps['renderInput'] = (
     selectedItem?: CryptosEnum,
     itemLabel?: string,
   ) => {
     if (!selectedItem) {
       return (
-        <View row spread centerV style={styles.picker}>
+        <View row spread centerV style={styles.picker} bg-$backgroundNeutralLight>
           <Text style={{color: Colors.grey40}}>Select a coin</Text>
           <FeatherIcons name="chevron-down" size={32} color={Colors.$textDisabled} />
         </View>
@@ -26,7 +26,7 @@ export const CoinSelector = React.memo(({value, onChange}: CoinSelectorProps) =>
     }
 
     return (
-      <View row spread centerV style={styles.picker}>
+      <View row spread centerV style={styles.picker} bg-$backgroundNeutralLight>
         <View row centerV gap-10>
           <IconCrypto crypto={selectedItem} />
           <Text>{itemLabel}</Text>
@@ -54,7 +54,7 @@ export const CoinSelector = React.memo(({value, onChange}: CoinSelectorProps) =>
       value={value}
       placeholder={'Select Coin'}
       topBarProps={{title: 'Coins'}}
-      renderPicker={renderPicker}
+      renderInput={renderInput}
       renderItem={renderItem}
       onChange={newValue => onChange?.(newValue as CryptosEnum)}>
       {Object.values(CryptosEnum).map(crypto => (

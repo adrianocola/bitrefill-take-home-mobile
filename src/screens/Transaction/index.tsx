@@ -57,8 +57,7 @@ export function TransactionScreen({transactionId}: TransactionScreenProps) {
       type,
       date: tDate,
     });
-    navigation.goBack();
-    Toast.success('Transaction saved!');
+    Toast.success('Transaction added!');
   };
 
   const onUpdateType = (index: number) => {
@@ -127,13 +126,26 @@ export function TransactionScreen({transactionId}: TransactionScreenProps) {
           />
           <View row gap-10 marginB-20>
             <View flex>
-              <DateTimePicker value={date} placeholder={'Date'} mode="date" onChange={setDate} />
+              <DateTimePicker
+                value={date}
+                placeholder={'Date'}
+                mode="date"
+                onChange={setDate}
+                maximumDate={new Date()}
+              />
               <View style={styles.rightIcon}>
                 <FeatherIcon name="calendar" size={20} color={Colors.$textDisabled} />
               </View>
             </View>
             <View flex>
-              <DateTimePicker value={time} placeholder={'Time'} mode="time" onChange={setTime} />
+              <DateTimePicker
+                value={time}
+                placeholder={'Time'}
+                mode="time"
+                onChange={setTime}
+                maximumDate={new Date()}
+                dateTimeFormatter={date => dayjs(date).format('HH:mm')}
+              />
               <View style={styles.rightIcon}>
                 <FeatherIcon name="clock" size={20} color={Colors.$textDisabled} />
               </View>

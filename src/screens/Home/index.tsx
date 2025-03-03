@@ -1,4 +1,5 @@
 import FeatherIcons from '@expo/vector-icons/Feather';
+import Constants from 'expo-constants';
 import {Link, router} from 'expo-router';
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
@@ -12,7 +13,7 @@ import Animated, {
   useScrollViewOffset,
 } from 'react-native-reanimated';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Avatar, Colors, FloatingButton, Text, View} from 'react-native-ui-lib';
+import {Colors, FloatingButton, Image, Text, View} from 'react-native-ui-lib';
 
 import {CoinIcon} from '@/components/CoinIcon';
 import {GradientCard} from '@/components/GradientCard';
@@ -56,8 +57,12 @@ export function HomeScreen() {
       <Animated.View style={[styles.header, headerAnimatedStyle]}>
         <View row centerV spread padding-20 paddingB-10 style={{paddingTop: top}}>
           <View row centerV gap-10>
-            <Avatar source={require('@/assets/images/dwight.jpg')} size={40} />
-            <Text text70>Dwight Schrute</Text>
+            <Image
+              source={require('@/assets/images/adaptive-icon.png')}
+              width={48}
+              aspectRatio={1}
+            />
+            <Text text70BL>{Constants.expoConfig?.name}</Text>
           </View>
           <Animated.View style={plusIconAnimatedStyle}>
             <Link

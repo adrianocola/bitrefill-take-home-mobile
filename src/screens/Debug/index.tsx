@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Alert} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {Button, Card, Chip, Text, View} from 'react-native-ui-lib';
@@ -6,20 +6,29 @@ import {Button, Card, Chip, Text, View} from 'react-native-ui-lib';
 import {Screen} from '@/components/Screen';
 import {
   deleteAllTransactions,
+  getTransactionsCountGroupedByCoin,
   initializeTransactions,
   insertRandomTransactions,
-  useTransactionsCountGroupedByCoin,
+  TransactionCountGroupedByCoin,
 } from '@/db/Transaction';
 import {formatNumber} from '@/utils/number';
 
 const counts = [1, 10, 100, 1_000];
 
 export function DebugScreen() {
-  const transactionsCountByCoin = useTransactionsCountGroupedByCoin();
+  const [transactionsCountGroupedByCoin, setTransactionsCountGroupedByCoin] = useState<
+    TransactionCountGroupedByCoin[]
+  >([]);
+
   const totalTransactions = useMemo(
-    () => transactionsCountByCoin.reduce((acc, item) => acc + item.count, 0),
-    [transactionsCountByCoin],
+    () => transactionsCountGroupedByCoin.reduce((acc, item) => acc + item.count, 0),
+    [transactionsCountGroupedByCoin],
   );
+
+  const fetchData = useCallback(async () => {
+    const data = await getTransactionsCountGroupedByCoin();
+    setTransactionsCountGroupedByCoin(data);
+  }, []);
 
   const onInsertRandomTransactions = async (count: number) => {
     const start = Date.now();
@@ -27,6 +36,12 @@ export function DebugScreen() {
     Alert.alert(
       'Success',
       `Inserted ${formatNumber(count)} transactions in ${Date.now() - start} ms`,
+    );
+    setTimeout(
+      () => {
+        fetchData();
+      },
+      Math.min(count, 1000),
     );
   };
 
@@ -37,6 +52,10 @@ export function DebugScreen() {
     Alert.alert('Success', `DB Cleared in ${Date.now() - start} ms`);
   };
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   return (
     <Screen>
       <KeyboardAwareScrollView>
@@ -45,7 +64,7 @@ export function DebugScreen() {
             <Text>Total Transactions: {totalTransactions}</Text>
           </Card>
           <View row gap-8 marginV-20 style={{flexWrap: 'wrap'}}>
-            {transactionsCountByCoin.map(item => (
+            {transactionsCountGroupedByCoin.map(item => (
               <Chip key={item.coin} label={`${item.coin}: ${item.count}`} />
             ))}
           </View>

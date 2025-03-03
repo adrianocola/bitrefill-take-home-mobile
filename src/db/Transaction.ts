@@ -135,6 +135,24 @@ export async function deleteAllTransactions() {
   return db.delete(transactions);
 }
 
+export interface TransactionCountGroupedByCoin {
+  coin: CoinsEnum;
+  count: number;
+}
+export async function getTransactionsCountGroupedByCoin() {
+  const db = dbDrizzle.getDbInstance();
+  const data = await db
+    .select({
+      coin: transactions.coin,
+      count: count().as('count'),
+    })
+    .from(transactions)
+    .groupBy(transactions.coin)
+    .orderBy(desc(sql`count`));
+
+  return data as TransactionCountGroupedByCoin[];
+}
+
 export function useTransaction(id: number) {
   const db = dbDrizzle.getDbInstance();
   const {data} = useLiveQuery(db.select().from(transactions).where(eq(transactions.id, id)));

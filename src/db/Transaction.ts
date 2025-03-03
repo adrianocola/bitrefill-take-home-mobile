@@ -135,23 +135,11 @@ export function useTransaction(id: number) {
   return processTransactionsListFromDb(data as Transaction[])[0] ?? null;
 }
 
-export function useTransactionsQuantityGroupedByCoin() {
+export function useAllTransactions() {
   const db = dbDrizzle.getDbInstance();
-  const {data} = useLiveQuery(
-    db
-      .select({
-        coin: transactions.coin,
-        totalQuantity: sum(transactions.quantity),
-      })
-      .from(transactions)
-      .groupBy(transactions.coin),
-  );
+  const {data} = useLiveQuery(db.select().from(transactions));
 
-  return data.map(item => ({
-    ...item,
-    coin: item.coin as CoinsEnum,
-    totalQuantity: fromDBValue(item.totalQuantity),
-  }));
+  return processTransactionsListFromDb(data as Transaction[]);
 }
 
 export function useTransactionsQuantityByCoin(coin: CoinsEnum) {
@@ -168,22 +156,6 @@ export function useTransactionsQuantityByCoin(coin: CoinsEnum) {
   );
 
   return fromDBValue(data[0]?.totalQuantity ?? 0);
-}
-
-export function useTransactionsCountGroupedByCoin() {
-  const db = dbDrizzle.getDbInstance();
-  const {data} = useLiveQuery(
-    db
-      .select({
-        coin: transactions.coin,
-        count: count().as('count'),
-      })
-      .from(transactions)
-      .groupBy(transactions.coin)
-      .orderBy(desc(sql`count`)),
-  );
-
-  return data;
 }
 
 export function useTransactionsIdsByCoinPaginated(coin: CoinsEnum) {

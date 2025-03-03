@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js';
 import {useMemo} from 'react';
 
 import {CoinsEnum, CoinUsdPrices} from '@/constants/Coins';
-import {useTransactionsQuantityGroupedByCoin} from '@/db/Transaction';
+import {useAllTransactions} from '@/db/Transaction';
 
 export interface CoinsWithBalance {
   coin: CoinsEnum;
@@ -11,22 +12,44 @@ export interface CoinsWithBalance {
 }
 
 export function useBalanceGroupedByCoin() {
-  const transactionsGroupedByCoin = useTransactionsQuantityGroupedByCoin();
+  const allTransactions = useAllTransactions();
+
+  const coinQuantityMap = allTransactions.reduce(
+    (acc, transaction) => {
+      acc[transaction.coin] = (acc[transaction.coin] ?? new BigNumber(0)).plus(
+        transaction.quantity,
+      );
+      return acc;
+    },
+    {} as Record<CoinsEnum, BigNumber>,
+  );
+
   return useMemo(() => {
-    const withBalance = transactionsGroupedByCoin
-      .map(data => ({
-        ...data,
-        balance: CoinUsdPrices[data.coin] * data.totalQuantity,
-      }))
+    const coinBalanceMap = Object.entries(coinQuantityMap).reduce(
+      (acc, [key, quantity]) => {
+        const coin = key as CoinsEnum;
+        acc[coin] = new BigNumber(quantity).times(CoinUsdPrices[coin]);
+        return acc;
+      },
+      {} as Record<CoinsEnum, BigNumber>,
+    );
+
+    const totalBalance = Object.values(coinBalanceMap)
+      .reduce((acc, balance) => acc.plus(balance), BigNumber(0))
+      .toNumber();
+
+    const withPercentage: CoinsWithBalance[] = Object.entries(coinBalanceMap)
+      .map(([key, balance]) => {
+        const coin = key as CoinsEnum;
+        return {
+          coin,
+          totalQuantity: coinQuantityMap[coin].toNumber(),
+          balance: balance.toNumber(),
+          percentage: balance.div(totalBalance).times(100).toNumber(),
+        };
+      })
       .sort((a, b) => b.balance - a.balance);
 
-    const totalBalance = withBalance.reduce((acc, item) => acc + item.balance, 0);
-
-    const withPercentage: CoinsWithBalance[] = withBalance.map(data => ({
-      ...data,
-      percentage: (data.balance / totalBalance) * 100,
-    }));
-
-    return {myCoins: withPercentage, totalBalance};
-  }, [transactionsGroupedByCoin]);
+    return {myCoins: withPercentage, allTransactions, totalBalance};
+  }, [allTransactions, coinQuantityMap]);
 }

@@ -1,8 +1,16 @@
+import FeatherIcons from '@expo/vector-icons/Feather';
 import dayjs from 'dayjs';
 import {lineDataItem} from 'gifted-charts-core';
 import React, {useEffect, useMemo, useState} from 'react';
+import {TouchableOpacity} from 'react-native';
 import {LineChart} from 'react-native-gifted-charts';
-import {Colors, View} from 'react-native-ui-lib';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import {Colors, Text, View} from 'react-native-ui-lib';
 
 import {CoinsEnum} from '@/constants/Coins';
 import {getAllTransactions, Transaction} from '@/db/Transaction';
@@ -20,6 +28,20 @@ const formatNumber = (value: number) => {
 export const PortfolioOverTime = () => {
   const [width, setWidth] = useState(0);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const animatedValue = useSharedValue(0);
+
+  const toggleChartView = () => {
+    animatedValue.value = withTiming(animatedValue.value === 1 ? 0 : 1, {duration: 500});
+  };
+
+  const chartAnimatedStyle = useAnimatedStyle(() => ({
+    height: interpolate(animatedValue.value, [0, 1], [0, 175]),
+    opacity: animatedValue.value,
+  }));
+
+  const iconAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{rotate: `${interpolate(animatedValue.value, [0, 1], [0, 180])}deg`}],
+  }));
 
   const chartData = useMemo(() => {
     if (!allTransactions.length) return [];
@@ -71,38 +93,48 @@ export const PortfolioOverTime = () => {
       marginT-20
       width="100%"
       onLayout={({nativeEvent}) => setWidth(nativeEvent.layout.width)}
-      style={{overflow: 'visible'}}>
-      <LineChart
-        data={chartData}
-        width={chartWidth}
-        height={100}
-        maxValue={maxValue * 1.1}
-        spacing={spacing}
-        disableScroll
-        hideDataPoints
-        rotateLabel
-        showVerticalLines
-        noOfSections={5}
-        rulesType="solid"
-        yAxisLabelWidth={LABELS_WIDTH}
-        color={Colors.$textDefault}
-        dataPointsColor={Colors.$textDefault}
-        yAxisColor={Colors.$textDefault}
-        xAxisColor={Colors.$textDefault}
-        yAxisTextStyle={{color: Colors.$textDefault, fontSize: 12}}
-        rulesColor="rgba(255,255,255,0.05)"
-        verticalLinesColor="rgba(255,255,255,0.05)"
-        formatYLabel={value => formatNumber(parseFloat(value))}
-        xAxisLabelsHeight={50}
-        xAxisLabelTextStyle={{
-          color: Colors.$textDefault,
-          fontSize: 12,
-          textAlign: 'left',
-          width: 50,
-          top: 25,
-          left: 25,
-        }}
-      />
+      style={{overflow: 'hidden'}}>
+      <Animated.View style={[chartAnimatedStyle]}>
+        <LineChart
+          data={chartData}
+          width={chartWidth}
+          height={100}
+          maxValue={maxValue * 1.1}
+          spacing={spacing}
+          disableScroll
+          hideDataPoints
+          rotateLabel
+          showVerticalLines
+          noOfSections={5}
+          rulesType="solid"
+          yAxisLabelWidth={LABELS_WIDTH}
+          color={Colors.$textDefault}
+          dataPointsColor={Colors.$textDefault}
+          yAxisColor={Colors.$textDefault}
+          xAxisColor={Colors.$textDefault}
+          yAxisTextStyle={{color: Colors.$textDefault, fontSize: 12}}
+          rulesColor="rgba(255,255,255,0.05)"
+          verticalLinesColor="rgba(255,255,255,0.05)"
+          formatYLabel={value => formatNumber(parseFloat(value))}
+          xAxisLabelsHeight={50}
+          xAxisLabelTextStyle={{
+            color: Colors.$textDefault,
+            fontSize: 12,
+            textAlign: 'left',
+            width: 50,
+            top: 25,
+            left: 25,
+          }}
+        />
+      </Animated.View>
+      <TouchableOpacity onPress={toggleChartView}>
+        <View row flex center>
+          <Text>Balance over time</Text>
+          <Animated.View style={iconAnimatedStyle}>
+            <FeatherIcons name="chevron-down" size={24} color={Colors.$textDefault} />
+          </Animated.View>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };

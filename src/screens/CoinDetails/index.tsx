@@ -32,7 +32,7 @@ export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
     if (!resetCoinsList) return;
 
     reset();
-  }, [resetCoinsList]);
+  }, [reset, resetCoinsList]);
 
   return (
     <Screen>

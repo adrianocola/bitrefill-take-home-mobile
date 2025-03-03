@@ -13,7 +13,7 @@ interface TransactionItemProps {
   transactionId: number;
 }
 
-export const TransactionItem = ({transactionId}: TransactionItemProps) => {
+export const TransactionItem = React.memo(({transactionId}: TransactionItemProps) => {
   const transaction = useTransaction(transactionId);
 
   if (!transaction) return null;
@@ -52,4 +52,4 @@ export const TransactionItem = ({transactionId}: TransactionItemProps) => {
       </Link>
     </Animated.View>
   );
-};
+});

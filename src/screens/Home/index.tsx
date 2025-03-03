@@ -15,15 +15,14 @@ import Animated, {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Colors, FloatingButton, Image, Text, View} from 'react-native-ui-lib';
 
-import {CoinIcon} from '@/components/CoinIcon';
 import {GradientCard} from '@/components/GradientCard';
 import {Screen} from '@/components/Screen';
-import {Coins} from '@/constants/Coins';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
 import {useBalanceGroupedByCoin} from '@/hooks/useBalanceGroupedByCoin';
-import {formatCurrency, formatNumber} from '@/utils/number';
+import {formatCurrency} from '@/utils/number';
 
 import {CoinBarChart} from './CoinBarChart';
+import {CoinLine} from './CoinLine';
 import {PortfolioOverTime} from './PortfolioOverTime';
 
 export function HomeScreen() {
@@ -89,28 +88,12 @@ export function HomeScreen() {
           </GradientCard>
           <View gap-20>
             {myCoins.map(item => (
-              <Link
+              <CoinLine
                 key={item.coin}
-                asChild
-                href={{
-                  pathname: '/coin/[coinId]',
-                  params: {coinId: item.coin},
-                }}>
-                <TouchableOpacity>
-                  <View row centerV spread>
-                    <View row centerV gap-8>
-                      <CoinIcon coin={item.coin} size={40} />
-                      <Text text60BL>{Coins[item.coin].name}</Text>
-                    </View>
-                    <View right>
-                      <Text text70BL>{formatCurrency(item.balance)}</Text>
-                      <Text $textNeutral text80>
-                        {formatNumber(item.totalQuantity)} {item.coin}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              </Link>
+                coin={item.coin}
+                balance={item.balance}
+                totalQuantity={item.totalQuantity}
+              />
             ))}
           </View>
         </View>

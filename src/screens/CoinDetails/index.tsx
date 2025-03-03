@@ -1,4 +1,4 @@
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 import {ActivityIndicator, FlatList, ListRenderItem, StyleSheet} from 'react-native';
 import {Colors, Text, View} from 'react-native-ui-lib';
 
@@ -7,13 +7,15 @@ import {CoinsEnum} from '@/constants/Coins';
 import {useTransactionsIdsByCoinPaginated} from '@/db/Transaction';
 import {CoinBalanceCard} from '@/screens/CoinDetails/CoinBalanceCard';
 import {TransactionItem} from '@/screens/CoinDetails/TransactionItem';
+import {useResetCoinsList} from '@/state/coins';
 
 interface CoinDetailsScreenProps {
   coin: CoinsEnum;
 }
 
 export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
-  const {transactionsIds, haveMore, nextPage} = useTransactionsIdsByCoinPaginated(coin);
+  const resetCoinsList = useResetCoinsList();
+  const {transactionsIds, haveMore, nextPage, reset} = useTransactionsIdsByCoinPaginated(coin);
 
   const keyExtractor = useCallback((item: number) => `${item}`, []);
 
@@ -25,6 +27,12 @@ export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
   const onEndReached = useCallback(() => {
     nextPage();
   }, [nextPage]);
+
+  useEffect(() => {
+    if (!resetCoinsList) return;
+
+    reset();
+  }, [resetCoinsList]);
 
   return (
     <Screen>

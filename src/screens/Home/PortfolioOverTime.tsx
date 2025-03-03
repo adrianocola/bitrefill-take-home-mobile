@@ -54,7 +54,6 @@ export const PortfolioOverTime = ({allTransactions}: PortfolioOverTimeProps) => 
     const endDate = dayjs().endOf('day');
     const hoursDiff = endDate.diff(dayjs(first.date), 'hour');
     const timeFormat = hoursDiff < 300 * 24 ? 'D MMM' : 'MMM YY';
-    console.log('hoursDiff', hoursDiff, 300 * 24, timeFormat);
     const hoursPeriod = hoursDiff / X_POINTS;
 
     const coinsPrice: Partial<Record<CoinsEnum, number>> = {};

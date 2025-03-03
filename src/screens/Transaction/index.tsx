@@ -1,7 +1,7 @@
 import FeatherIcon from '@expo/vector-icons/Feather';
 import dayjs from 'dayjs';
 import {useNavigation} from 'expo-router';
-import React, {useMemo, useState} from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAvoidingView, KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {Colors, DateTimePicker, FloatingButton, Text, TextField, View} from 'react-native-ui-lib';
@@ -18,6 +18,7 @@ import {
   updateTransaction,
 } from '@/db/Transaction';
 import {BuySellSwitch} from '@/screens/Transaction/BuySellSwitch';
+import {useSetResetCoinsList} from '@/state/coins';
 import {validateIsNumber, validateMaxNumber, validateMaxPrecision} from '@/utils/validator';
 
 import {FormLabel} from './FormLabel';
@@ -33,6 +34,7 @@ export function TransactionScreen({
   transaction,
   initialCoin,
 }: TransactionScreenProps) {
+  const setResetCoinsList = useSetResetCoinsList();
   const navigation = useNavigation();
   const [coin, setCoin] = useState<CoinsEnum | undefined>(transaction?.coin ?? initialCoin);
   const [quantity, setQuantity] = useState(
@@ -88,8 +90,12 @@ export function TransactionScreen({
       await updateTransaction(transactionId, transactionData);
     } else {
       await addTransaction(transactionData);
+      if (coin === initialCoin) {
+        setResetCoinsList(Date.now());
+      }
     }
     Toast.success(transactionId ? 'Transaction updated!' : 'Transaction added!');
+    navigation.goBack();
   };
 
   const onDeleteTransaction = async () => {

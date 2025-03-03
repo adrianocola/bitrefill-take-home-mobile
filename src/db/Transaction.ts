@@ -187,9 +187,13 @@ export function useTransactionsIdsByCoinPaginated(coin: CoinsEnum) {
     [coin],
   );
 
-  useEffect(() => {
+  const reset = useCallback(() => {
     nextPage(true);
   }, [nextPage]);
 
-  return {transactionsIds, haveMore: haveMoreRef.current, nextPage};
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
+  return {transactionsIds, haveMore: haveMoreRef.current, nextPage, reset};
 }

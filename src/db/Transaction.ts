@@ -103,13 +103,6 @@ export async function deleteAllTransactions() {
   return db.delete(transactions);
 }
 
-export async function getAllTransactions() {
-  const db = dbDrizzle.getDbInstance();
-  const data = await db.select().from(transactions).orderBy(transactions.date);
-
-  return processTransactionsListFromDb(data as Transaction[]);
-}
-
 export interface TransactionCountGroupedByCoin {
   coin: CoinsEnum;
   count: number;

@@ -1,7 +1,7 @@
 import FeatherIcons from '@expo/vector-icons/Feather';
 import dayjs from 'dayjs';
 import {lineDataItem} from 'gifted-charts-core';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {LineChart} from 'react-native-gifted-charts';
 import Animated, {
@@ -13,7 +13,7 @@ import Animated, {
 import {Colors, Text, View} from 'react-native-ui-lib';
 
 import {CoinsEnum} from '@/constants/Coins';
-import {getAllTransactions, Transaction} from '@/db/Transaction';
+import {Transaction} from '@/db/Transaction';
 
 const LABELS_WIDTH = 40;
 const X_POINTS = 10;
@@ -25,9 +25,12 @@ const formatNumber = (value: number) => {
   return value.toString();
 };
 
-export const PortfolioOverTime = () => {
+interface PortfolioOverTimeProps {
+  allTransactions: Transaction[];
+}
+
+export const PortfolioOverTime = ({allTransactions}: PortfolioOverTimeProps) => {
   const [width, setWidth] = useState(0);
-  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const animatedValue = useSharedValue(0);
 
   const toggleChartView = () => {
@@ -48,13 +51,13 @@ export const PortfolioOverTime = () => {
 
     const data: lineDataItem[] = [];
     const first = allTransactions[0];
-    const hoursDiff = dayjs().diff(dayjs(first.date), 'hour');
-    const timeFormat = hoursDiff < 300 ? 'D MMM' : 'MMM YY';
+    const endDate = dayjs().endOf('day');
+    const hoursDiff = endDate.diff(dayjs(first.date), 'hour');
+    const timeFormat = hoursDiff < 300 * 24 ? 'D MMM' : 'MMM YY';
     const hoursPeriod = hoursDiff / X_POINTS;
 
     const coinsPrice: Partial<Record<CoinsEnum, number>> = {};
     const coinsBalance: Partial<Record<CoinsEnum, number>> = {};
-    const endDate = dayjs();
     let refDate = dayjs(first.date).add(hoursPeriod, 'hour');
     let tIndex = 0;
 
@@ -83,10 +86,6 @@ export const PortfolioOverTime = () => {
   const chartWidth = width - 2 * LABELS_WIDTH;
   const spacing = chartData.length > 1 ? chartWidth / (chartData.length + 1) : chartWidth;
   const maxValue = Math.max(...chartData.map(item => item.value ?? 0));
-
-  useEffect(() => {
-    getAllTransactions().then(setAllTransactions);
-  }, []);
 
   return (
     <View

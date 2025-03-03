@@ -31,7 +31,7 @@ export function HomeScreen() {
   const animatedRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(animatedRef);
 
-  const {myCoins, totalBalance} = useBalanceGroupedByCoin();
+  const {myCoins, allTransactions, totalBalance} = useBalanceGroupedByCoin();
 
   const bottomButtonAnimatedStyle = useAnimatedStyle(() => ({
     bottom: clamp(-scrollOffset.value, -500, 0),
@@ -85,7 +85,7 @@ export function HomeScreen() {
           <GradientCard center marginV-20 paddingV-20 paddingH-20 gap-10 color="rgba(0,0,0,0.5)">
             <Text text30BO>{formatCurrency(totalBalance)}</Text>
             <CoinBarChart coinsWithBalance={myCoins} />
-            <PortfolioOverTime />
+            <PortfolioOverTime allTransactions={allTransactions} />
           </GradientCard>
           <View gap-20>
             {myCoins.map(item => (

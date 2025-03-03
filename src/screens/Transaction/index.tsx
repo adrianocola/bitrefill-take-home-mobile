@@ -201,7 +201,8 @@ export function TransactionScreen({
           bottomMargin={50}
           fullWidth
           button={{
-            label: transactionId ? 'Update transaction' : `Add ${type} transaction`.toUpperCase(),
+            label: transactionId ? 'Update Transaction' : `Add ${type} Transaction`,
+            labelProps: {style: styles.buttonLabel},
             animateLayout: true,
             backgroundColor: buttonColor,
             color: buttonTextColor,
@@ -232,5 +233,10 @@ const styles = StyleSheet.create({
   },
   priceIcon: {
     marginRight: 5,
+  },
+  buttonLabel: {
+    textTransform: 'capitalize',
+    fontSize: 16,
+    lineHeight: 24,
   },
 });

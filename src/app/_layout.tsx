@@ -39,7 +39,7 @@ export default function RootLayout() {
         <DatabaseProvider onInit={onDbInit}>
           <Stack
             screenOptions={{
-              headerBackTitle: 'back',
+              headerBackButtonDisplayMode: 'minimal',
               headerTintColor: Colors.$textDefault,
             }}>
             <Stack.Screen name="index" options={{headerShown: false}} />

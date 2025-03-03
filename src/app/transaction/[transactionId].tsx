@@ -21,6 +21,7 @@ export default function TransactionRoute() {
 
   useEffect(() => {
     navigation.setOptions({
+      headerBackButtonDisplayMode: editTransaction || coin ? 'default' : 'minimal',
       headerTitle: editTransaction ? 'Edit Transaction' : 'Add Transaction',
       headerRight: () => (
         <Link asChild href="/debug">

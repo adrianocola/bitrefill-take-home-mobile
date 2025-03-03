@@ -3,7 +3,7 @@ import {Alert} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {Button, Card, Chip, Text, View} from 'react-native-ui-lib';
 
-import {Screen} from '@/components/ui/Screen';
+import {Screen} from '@/components/Screen';
 import {
   deleteAllTransactions,
   initializeTransactions,

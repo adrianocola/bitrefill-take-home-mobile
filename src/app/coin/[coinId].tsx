@@ -4,18 +4,18 @@ import {useEffect} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {Colors} from 'react-native-ui-lib';
 
+import {Coins, CoinsEnum} from '@/constants/Coins';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
-import {Cryptos, CryptosEnum} from '@/constants/Cryptos';
 import {CoinDetailsScreen} from '@/screens/CoinDetails';
 
-export default function CryptoRoute() {
+export default function CoinRoute() {
   const navigation = useNavigation();
 
-  const {coinId} = useLocalSearchParams<{coinId: CryptosEnum}>();
+  const {coinId} = useLocalSearchParams<{coinId: CoinsEnum}>();
 
   useEffect(() => {
     navigation.setOptions({
-      title: Cryptos[coinId].name,
+      title: Coins[coinId].name,
       headerRight: () => (
         <Link
           asChild

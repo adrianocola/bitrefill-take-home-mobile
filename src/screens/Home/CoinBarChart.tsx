@@ -2,18 +2,18 @@ import React, {useMemo} from 'react';
 import {StyleSheet} from 'react-native';
 import {Colors, View} from 'react-native-ui-lib';
 
-import {Cryptos} from '@/constants/Cryptos';
+import {Coins} from '@/constants/Coins';
 import {CoinsWithBalance} from '@/hooks/useBalanceGroupedByCoin';
 
-import {CryptoChip} from './CryptoChip';
+import {CoinChip} from './CoinChip';
 
-interface CryptoLineProps {
+interface CoinLineProps {
   coinsWithBalance: CoinsWithBalance[];
 }
 
 const MAIN_COUNT = 5;
 
-export const CryptoBarChart = ({coinsWithBalance}: CryptoLineProps) => {
+export const CoinBarChart = ({coinsWithBalance}: CoinLineProps) => {
   const {mainCoinsWithBalance, remainingPercentage} = useMemo(() => {
     if (!coinsWithBalance.length) return {mainCoinsWithBalance: [], remainingPercentage: 0};
 
@@ -37,16 +37,16 @@ export const CryptoBarChart = ({coinsWithBalance}: CryptoLineProps) => {
             key={data.coin}
             width={`${Math.round(data.percentage)}%`}
             height={10}
-            backgroundColor={Cryptos[data.coin].color}
+            backgroundColor={Coins[data.coin].color}
           />
         ))}
         <View width={`${remainingPercentage}%`} height={10} backgroundColor={Colors.grey20} />
       </View>
       <View row gap-10 center style={styles.chipsContainer}>
         {mainCoinsWithBalance.map((data, i) => (
-          <CryptoChip key={data.coin} coin={data.coin} percentage={data.percentage} />
+          <CoinChip key={data.coin} coin={data.coin} percentage={data.percentage} />
         ))}
-        <CryptoChip percentage={remainingPercentage} />
+        <CoinChip percentage={remainingPercentage} />
       </View>
     </View>
   );

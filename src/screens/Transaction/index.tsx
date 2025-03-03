@@ -8,10 +8,15 @@ import {Colors, DateTimePicker, FloatingButton, Text, TextField, View} from 'rea
 import {Toast} from 'toastify-react-native';
 
 import {CoinSelector} from '@/components/CoinSelector';
-import {Screen} from '@/components/ui/Screen';
-import {Cryptos, CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
-import {Transaction, TransactionTypeEnum} from '@/db/schema';
-import {addTransaction, deleteTransaction, updateTransaction} from '@/db/Transaction';
+import {Screen} from '@/components/Screen';
+import {Coins, CoinsEnum, CoinUsdPrices} from '@/constants/Coins';
+import {
+  addTransaction,
+  deleteTransaction,
+  Transaction,
+  TransactionTypeEnum,
+  updateTransaction,
+} from '@/db/Transaction';
 import {BuySellSwitch} from '@/screens/Transaction/BuySellSwitch';
 import {validateIsNumber, validateMaxNumber, validateMaxPrecision} from '@/utils/validator';
 
@@ -20,7 +25,7 @@ import {FormLabel} from './FormLabel';
 interface TransactionScreenProps {
   transactionId?: number;
   transaction?: Transaction;
-  initialCoin?: CryptosEnum;
+  initialCoin?: CoinsEnum;
 }
 
 export function TransactionScreen({
@@ -29,13 +34,13 @@ export function TransactionScreen({
   initialCoin,
 }: TransactionScreenProps) {
   const navigation = useNavigation();
-  const [coin, setCoin] = useState<CryptosEnum | undefined>(transaction?.coin ?? initialCoin);
+  const [coin, setCoin] = useState<CoinsEnum | undefined>(transaction?.coin ?? initialCoin);
   const [quantity, setQuantity] = useState(
     transaction?.quantity ? Math.abs(transaction?.quantity).toString() : '',
   );
   const [pricePerCoin, setPricePerCoin] = useState(() => {
     if (transaction?.pricePerCoin) return transaction?.pricePerCoin.toString();
-    if (initialCoin) return `${CryptoUsdPrices[initialCoin]}`;
+    if (initialCoin) return `${CoinUsdPrices[initialCoin]}`;
 
     return '';
   });
@@ -45,8 +50,8 @@ export function TransactionScreen({
   const [date, setDate] = useState(transaction?.date ?? new Date());
   const [time, setTime] = useState(transaction?.date ?? new Date());
 
-  const [quantityIsValid, setQuantityIsValid] = useState(!!transactionId);
-  const [pricePerCoinIsValid, setPricePerCoinIsValid] = useState(!!transactionId);
+  const [quantityIsValid, setQuantityIsValid] = useState(!!quantity);
+  const [pricePerCoinIsValid, setPricePerCoinIsValid] = useState(!!pricePerCoin);
 
   const canSubmit = coin && quantityIsValid && pricePerCoinIsValid && date && time;
 
@@ -57,9 +62,9 @@ export function TransactionScreen({
     buttonTextColor = Colors.$backgroundNeutral;
   }
 
-  const onCoinUpdated = (newCoin?: CryptosEnum) => {
+  const onCoinUpdated = (newCoin?: CoinsEnum) => {
     setCoin(newCoin);
-    setPricePerCoin(newCoin ? `${CryptoUsdPrices[newCoin]}` : '');
+    setPricePerCoin(newCoin ? `${CoinUsdPrices[newCoin]}` : '');
   };
 
   const onSaveTransaction = async () => {
@@ -114,7 +119,7 @@ export function TransactionScreen({
               enableErrors
               validateOnChange
               onChangeValidity={setQuantityIsValid}
-              trailingAccessory={coin ? <Text color={Cryptos[coin].color}>{coin}</Text> : undefined}
+              trailingAccessory={coin ? <Text color={Coins[coin].color}>{coin}</Text> : undefined}
               validate={[
                 validateIsNumber.validator,
                 validateMaxNumber.validator,

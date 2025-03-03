@@ -5,6 +5,7 @@ import {useFonts} from 'expo-font';
 import {Stack} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {StatusBar} from 'expo-status-bar';
+import {Platform} from 'react-native';
 import {KeyboardProvider} from 'react-native-keyboard-controller';
 import {Colors} from 'react-native-ui-lib';
 import ToastManager from 'toastify-react-native';
@@ -52,7 +53,7 @@ export default function RootLayout() {
               name="coin/[coinId]"
               options={{
                 headerBlurEffect: 'regular',
-                headerTransparent: true,
+                headerTransparent: Platform.OS === 'ios',
               }}
             />
             <Stack.Screen

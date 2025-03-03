@@ -4,15 +4,25 @@ import {count, desc, eq, sql, sum} from 'drizzle-orm';
 import {useLiveQuery} from 'drizzle-orm/expo-sqlite';
 import {useCallback, useEffect, useRef, useState} from 'react';
 
+import {CoinsEnum, CoinUsdPrices} from '@/constants/Coins';
 import {NUMBER_PRECISION, TRANSACTIONS_PAGE_SIZE} from '@/constants/Consts';
-import {CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
 import {getRandomPastDate, randomItem, randomRange} from '@/utils/random';
 
 import {dbDrizzle} from './DrizzleDb';
 import initialData from './initialTransactions.json';
-import {Transaction, transactions, TransactionTypeEnum} from './schema';
+import {transactions} from './schema';
 
 const precisionMultiplier = new BigNumber(10).pow(NUMBER_PRECISION);
+
+export enum TransactionTypeEnum {
+  BUY = 'buy',
+  SELL = 'sell',
+}
+
+export type Transaction = typeof transactions.$inferSelect & {
+  coin: CoinsEnum;
+  type: TransactionTypeEnum;
+};
 
 export interface TransactionData extends Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'> {
   type: TransactionTypeEnum;
@@ -62,14 +72,14 @@ export async function initializeTransactions() {
 
 export async function insertRandomTransactions(quantity: number) {
   const db = dbDrizzle.getDbInstance();
-  const coins = Object.values(CryptosEnum);
+  const coins = Object.values(CoinsEnum);
   const chunkSize = 1000;
 
   const generateRecords = (count: number) =>
     new Array(count).fill(null).map(() => {
       const coin = randomItem(coins);
       const paid = randomRange(0, 100);
-      const pricePerCoin = CryptoUsdPrices[coin] * (1 + randomRange(-0.5, 0.5));
+      const pricePerCoin = CoinUsdPrices[coin] * (1 + randomRange(-0.5, 0.5));
       const type = randomRange(0, 1) <= 0.25 ? TransactionTypeEnum.SELL : TransactionTypeEnum.BUY;
       const quantity = (type === TransactionTypeEnum.BUY ? 1 : -1) * (paid / pricePerCoin);
 
@@ -146,12 +156,12 @@ export function useTransactionsQuantityGroupedByCoin() {
 
   return data.map(item => ({
     ...item,
-    coin: item.coin as CryptosEnum,
+    coin: item.coin as CoinsEnum,
     totalQuantity: fromDBValue(item.totalQuantity),
   }));
 }
 
-export function useTransactionsQuantityByCoin(coin: CryptosEnum) {
+export function useTransactionsQuantityByCoin(coin: CoinsEnum) {
   const db = dbDrizzle.getDbInstance();
 
   const {data} = useLiveQuery(
@@ -183,7 +193,7 @@ export function useTransactionsCountGroupedByCoin() {
   return data;
 }
 
-export function useTransactionsIdsByCoinPaginated(coin: CryptosEnum) {
+export function useTransactionsIdsByCoinPaginated(coin: CoinsEnum) {
   const [transactionsIds, setTransactionsIds] = useState<number[]>([]);
   const pageRef = useRef(0);
   const fetchingRef = useRef(false);

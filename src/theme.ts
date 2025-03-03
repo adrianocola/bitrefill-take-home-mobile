@@ -3,6 +3,7 @@ import {Colors, TextFieldProps, ThemeManager} from 'react-native-ui-lib';
 Colors.setScheme('dark');
 
 ThemeManager.setComponentTheme('TextField', (props: TextFieldProps) => ({
+  placeholderTextColor: Colors.$textDisabled,
   fieldStyle: [
     {
       borderWidth: 1,

@@ -4,8 +4,8 @@ import {useEffect} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {Colors} from 'react-native-ui-lib';
 
+import {CoinsEnum} from '@/constants/Coins';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
-import {CryptosEnum} from '@/constants/Cryptos';
 import {TransactionScreen} from '@/screens/Transaction';
 import {TransactionLoader} from '@/screens/Transaction/TransactionLoader';
 
@@ -14,7 +14,7 @@ export default function TransactionRoute() {
 
   const {transactionId, coin} = useLocalSearchParams<{
     transactionId?: string;
-    coin?: CryptosEnum;
+    coin?: CoinsEnum;
   }>();
 
   const editTransaction = !!transactionId && transactionId !== NEW_TRANSACTION_ID;

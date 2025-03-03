@@ -1,10 +1,10 @@
 import {useMemo} from 'react';
 
-import {CryptosEnum, CryptoUsdPrices} from '@/constants/Cryptos';
+import {CoinsEnum, CoinUsdPrices} from '@/constants/Coins';
 import {useTransactionsQuantityGroupedByCoin} from '@/db/Transaction';
 
 export interface CoinsWithBalance {
-  coin: CryptosEnum;
+  coin: CoinsEnum;
   totalQuantity: number;
   balance: number;
   percentage: number;
@@ -16,7 +16,7 @@ export function useBalanceGroupedByCoin() {
     const withBalance = transactionsGroupedByCoin
       .map(data => ({
         ...data,
-        balance: CryptoUsdPrices[data.coin] * data.totalQuantity,
+        balance: CoinUsdPrices[data.coin] * data.totalQuantity,
       }))
       .sort((a, b) => b.balance - a.balance);
 

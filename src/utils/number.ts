@@ -1,5 +1,3 @@
-import {NUMBER_PRECISION} from '@/constants/Consts';
-
 const intlUsdFormat = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -7,7 +5,7 @@ const intlUsdFormat = new Intl.NumberFormat('en-US', {
 });
 
 const intlNumberFormat = new Intl.NumberFormat('en-US', {
-  maximumFractionDigits: NUMBER_PRECISION,
+  maximumFractionDigits: 4,
 });
 
 export function formatCurrency(value: number) {

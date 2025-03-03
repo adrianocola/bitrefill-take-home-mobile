@@ -1,15 +1,15 @@
 import {useCallback} from 'react';
-import {FlatList, ListRenderItem, StyleSheet} from 'react-native';
-import {Text, View} from 'react-native-ui-lib';
+import {ActivityIndicator, FlatList, ListRenderItem, StyleSheet} from 'react-native';
+import {Colors, Text, View} from 'react-native-ui-lib';
 
-import {Screen} from '@/components/ui/Screen';
-import {CryptosEnum} from '@/constants/Cryptos';
+import {Screen} from '@/components/Screen';
+import {CoinsEnum} from '@/constants/Coins';
 import {useTransactionsIdsByCoinPaginated} from '@/db/Transaction';
 import {CoinBalanceCard} from '@/screens/CoinDetails/CoinBalanceCard';
 import {TransactionItem} from '@/screens/CoinDetails/TransactionItem';
 
 interface CoinDetailsScreenProps {
-  coin: CryptosEnum;
+  coin: CoinsEnum;
 }
 
 export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
@@ -41,11 +41,13 @@ export function CoinDetailsScreen({coin}: CoinDetailsScreenProps) {
           </View>
         }
         ListFooterComponent={
-          !haveMore ? (
-            <View padding-20 center>
+          <View padding-20 center>
+            {haveMore ? (
+              <ActivityIndicator color={Colors.$textDefault} />
+            ) : (
               <Text $textDisabled>No more transactions....</Text>
-            </View>
-          ) : undefined
+            )}
+          </View>
         }
       />
     </Screen>

@@ -6,8 +6,7 @@ import {TouchableOpacity} from 'react-native';
 import Animated, {FadeOut, LinearTransition} from 'react-native-reanimated';
 import {Colors, Text, View} from 'react-native-ui-lib';
 
-import {TransactionTypeEnum} from '@/db/schema';
-import {useTransaction} from '@/db/Transaction';
+import {TransactionTypeEnum, useTransaction} from '@/db/Transaction';
 import {formatCurrency, formatNumber} from '@/utils/number';
 
 interface TransactionItemProps {

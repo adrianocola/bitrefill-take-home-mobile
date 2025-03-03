@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "AC - Portfolio",
+    "name": "Acola Portfolio",
     "slug": "bitrefill-take-home-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
-      }
+      },
+      "package": "com.adrianocola.bitrefilltakehomemobile"
     },
     "web": {
       "bundler": "metro",

@@ -14,14 +14,15 @@ import Animated, {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Avatar, Colors, FloatingButton, Text, View} from 'react-native-ui-lib';
 
+import {CoinIcon} from '@/components/CoinIcon';
 import {GradientCard} from '@/components/GradientCard';
-import {IconCrypto} from '@/components/ui/IconCrypto';
-import {Screen} from '@/components/ui/Screen';
+import {Screen} from '@/components/Screen';
+import {Coins} from '@/constants/Coins';
 import {NEW_TRANSACTION_ID} from '@/constants/Consts';
-import {Cryptos} from '@/constants/Cryptos';
 import {useBalanceGroupedByCoin} from '@/hooks/useBalanceGroupedByCoin';
-import {CryptoBarChart} from '@/screens/Home/CryptoBarChart';
 import {formatCurrency, formatNumber} from '@/utils/number';
+
+import {CoinBarChart} from './CoinBarChart';
 
 export function HomeScreen() {
   const {top} = useSafeAreaInsets();
@@ -36,7 +37,7 @@ export function HomeScreen() {
 
   const headerAnimatedStyle = useAnimatedStyle(() => ({
     shadowColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#222222']),
-    borderBottomColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#222222']),
+    borderBottomColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#333333']),
   }));
 
   const plusIconAnimatedStyle = useAnimatedStyle(() => ({
@@ -77,7 +78,7 @@ export function HomeScreen() {
         <View padding-20 paddingB-100 paddingT-0>
           <GradientCard center marginV-20 paddingV-20 paddingH-20 gap-10 color="rgba(0,0,0,0.5)">
             <Text text30BO>{formatCurrency(totalBalance)}</Text>
-            <CryptoBarChart coinsWithBalance={myCoins} />
+            <CoinBarChart coinsWithBalance={myCoins} />
           </GradientCard>
           <View gap-20>
             {myCoins.map(item => (
@@ -91,8 +92,8 @@ export function HomeScreen() {
                 <TouchableOpacity>
                   <View row centerV spread>
                     <View row centerV gap-8>
-                      <IconCrypto crypto={item.coin} size={40} />
-                      <Text text60BL>{Cryptos[item.coin].name}</Text>
+                      <CoinIcon coin={item.coin} size={40} />
+                      <Text text60BL>{Coins[item.coin].name}</Text>
                     </View>
                     <View right>
                       <Text text70BL>{formatCurrency(item.balance)}</Text>
@@ -131,7 +132,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.75,
     shadowRadius: 10,
-    elevation: 5,
+    elevation: 10,
+    filter: 'dropShadow(#ffffff, 0, 10px, 10px)',
     zIndex: 10,
   },
   bottomButtonContainer: {

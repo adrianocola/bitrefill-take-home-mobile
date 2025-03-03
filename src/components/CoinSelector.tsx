@@ -3,17 +3,17 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Colors, Picker, PickerProps, Text, View} from 'react-native-ui-lib';
 
-import {IconCrypto} from '@/components/ui/IconCrypto';
-import {CryptosEnum} from '@/constants/Cryptos';
+import {CoinIcon} from '@/components/CoinIcon';
+import {CoinsEnum} from '@/constants/Coins';
 
 interface CoinSelectorProps {
-  value?: CryptosEnum;
-  onChange?: (value?: CryptosEnum) => void;
+  value?: CoinsEnum;
+  onChange?: (value?: CoinsEnum) => void;
 }
 
 export const CoinSelector = React.memo(({value, onChange}: CoinSelectorProps) => {
   const renderInput: PickerProps['renderInput'] = (
-    selectedItem?: CryptosEnum,
+    selectedItem?: CoinsEnum,
     itemLabel?: string,
   ) => {
     if (!selectedItem) {
@@ -28,7 +28,7 @@ export const CoinSelector = React.memo(({value, onChange}: CoinSelectorProps) =>
     return (
       <View row spread centerV style={styles.picker} bg-$backgroundNeutralLight>
         <View row centerV gap-10>
-          <IconCrypto crypto={selectedItem} />
+          <CoinIcon coin={selectedItem} />
           <Text>{itemLabel}</Text>
         </View>
         <FeatherIcons name="chevron-down" size={32} color={Colors.$textDisabled} />
@@ -40,7 +40,7 @@ export const CoinSelector = React.memo(({value, onChange}: CoinSelectorProps) =>
     return (
       <View>
         <View row padding-10 centerV gap-10>
-          <IconCrypto crypto={value as CryptosEnum} />
+          <CoinIcon coin={value as CoinsEnum} />
           <Text>{itemLabel}</Text>
         </View>
         <View height={1} style={styles.divider} />
@@ -56,9 +56,9 @@ export const CoinSelector = React.memo(({value, onChange}: CoinSelectorProps) =>
       topBarProps={{title: 'Coins'}}
       renderInput={renderInput}
       renderItem={renderItem}
-      onChange={newValue => onChange?.(newValue as CryptosEnum)}>
-      {Object.values(CryptosEnum).map(crypto => (
-        <Picker.Item key={crypto} label={crypto} value={crypto} />
+      onChange={newValue => onChange?.(newValue as CoinsEnum)}>
+      {Object.values(CoinsEnum).map(coin => (
+        <Picker.Item key={coin} label={coin} value={coin} />
       ))}
     </Picker>
   );

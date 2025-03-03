@@ -2,22 +2,22 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Chip, Colors} from 'react-native-ui-lib';
 
-import {Cryptos, CryptosEnum} from '@/constants/Cryptos';
+import {Coins, CoinsEnum} from '@/constants/Coins';
 
-interface CryptoChipProps {
-  coin?: CryptosEnum;
+interface CoinChipProps {
+  coin?: CoinsEnum;
   percentage: number;
 }
 
-export const CryptoChip = ({coin, percentage}: CryptoChipProps) => {
+export const CoinChip = ({coin, percentage}: CoinChipProps) => {
   if (!percentage) return null;
 
   return (
     <Chip
       label={`${coin ?? 'Other'}: ${Math.round(percentage)}%`}
       containerStyle={styles.container}
-      backgroundColor={coin ? Cryptos[coin].color : Colors.grey20}
-      labelStyle={{color: (coin ? Cryptos[coin].textColor : undefined) ?? Colors.white}}
+      backgroundColor={coin ? Coins[coin].color : Colors.grey20}
+      labelStyle={{color: (coin ? Coins[coin].textColor : undefined) ?? Colors.white}}
     />
   );
 };

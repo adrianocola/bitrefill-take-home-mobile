@@ -1,7 +1,7 @@
 import FeatherIcon from '@expo/vector-icons/Feather';
 import dayjs from 'dayjs';
 import {useNavigation} from 'expo-router';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {KeyboardAvoidingView, KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {Colors, DateTimePicker, FloatingButton, Text, TextField, View} from 'react-native-ui-lib';
@@ -57,7 +57,7 @@ export function TransactionScreen({
 
   let buttonColor = type === TransactionTypeEnum.BUY ? Colors.green10 : Colors.red10;
   let buttonTextColor = Colors.$textDefault;
-  if (transactionId) {
+  if (transactionId && canSubmit) {
     buttonColor = Colors.white;
     buttonTextColor = Colors.$backgroundNeutral;
   }
@@ -202,8 +202,6 @@ export function TransactionScreen({
           fullWidth
           button={{
             label: transactionId ? 'Update Transaction' : `Add ${type} Transaction`,
-            labelProps: {style: styles.buttonLabel},
-            animateLayout: true,
             backgroundColor: buttonColor,
             color: buttonTextColor,
             disabled: !canSubmit,
@@ -233,10 +231,5 @@ const styles = StyleSheet.create({
   },
   priceIcon: {
     marginRight: 5,
-  },
-  buttonLabel: {
-    textTransform: 'capitalize',
-    fontSize: 16,
-    lineHeight: 24,
   },
 });

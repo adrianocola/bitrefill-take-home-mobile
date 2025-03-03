@@ -1,17 +1,18 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Alert} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
-import {Button, Card, Chip, Text, View} from 'react-native-ui-lib';
+import {Button, Card, Chip, Colors, Text, View} from 'react-native-ui-lib';
 
 import {Screen} from '@/components/Screen';
 import {
   deleteAllTransactions,
   getTransactionsCountGroupedByCoin,
   initializeTransactions,
-  insertRandomTransactions,
   TransactionCountGroupedByCoin,
 } from '@/db/Transaction';
 import {formatNumber} from '@/utils/number';
+
+import {insertRandomTransactions} from './insertRandomTransactions';
 
 const counts = [1, 10, 100, 1_000];
 
@@ -69,6 +70,9 @@ export function DebugScreen() {
             ))}
           </View>
           <Text text50>Add random transactions:</Text>
+          <Text text80 color={Colors.$textDisabled}>
+            From 1 year ago to now
+          </Text>
           {counts.map(count => (
             <Button
               key={count}

@@ -24,6 +24,7 @@ import {useBalanceGroupedByCoin} from '@/hooks/useBalanceGroupedByCoin';
 import {formatCurrency, formatNumber} from '@/utils/number';
 
 import {CoinBarChart} from './CoinBarChart';
+import {PortfolioOverTime} from './PortfolioOverTime';
 
 export function HomeScreen() {
   const {top} = useSafeAreaInsets();
@@ -84,6 +85,7 @@ export function HomeScreen() {
           <GradientCard center marginV-20 paddingV-20 paddingH-20 gap-10 color="rgba(0,0,0,0.5)">
             <Text text30BO>{formatCurrency(totalBalance)}</Text>
             <CoinBarChart coinsWithBalance={myCoins} />
+            <PortfolioOverTime />
           </GradientCard>
           <View gap-20>
             {myCoins.map(item => (

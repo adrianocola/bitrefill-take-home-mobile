@@ -4,9 +4,8 @@ import {count, desc, eq, sql, sum} from 'drizzle-orm';
 import {useLiveQuery} from 'drizzle-orm/expo-sqlite';
 import {useCallback, useEffect, useRef, useState} from 'react';
 
-import {CoinsEnum, CoinUsdPrices} from '@/constants/Coins';
+import {CoinsEnum} from '@/constants/Coins';
 import {NUMBER_PRECISION, TRANSACTIONS_PAGE_SIZE} from '@/constants/Consts';
-import {getRandomPastDate, randomItem, randomRange} from '@/utils/random';
 
 import {dbDrizzle} from './DrizzleDb';
 import initialData from './initialTransactions.json';
@@ -28,7 +27,7 @@ export interface TransactionData extends Omit<Transaction, 'id' | 'createdAt' | 
   type: TransactionTypeEnum;
 }
 
-function toDBValue(value: number | string): number {
+export function toDBValue(value: number | string): number {
   return new BigNumber(value)
     .times(precisionMultiplier)
     .integerValue(BigNumber.ROUND_FLOOR)
@@ -70,37 +69,6 @@ export async function initializeTransactions() {
   return db.insert(transactions).values(initialTransactions);
 }
 
-export async function insertRandomTransactions(quantity: number) {
-  const db = dbDrizzle.getDbInstance();
-  const coins = Object.values(CoinsEnum);
-  const chunkSize = 1000;
-
-  const generateRecords = (count: number) =>
-    new Array(count).fill(null).map(() => {
-      const coin = randomItem(coins);
-      const paid = randomRange(0, 100);
-      const pricePerCoin = CoinUsdPrices[coin] * (1 + randomRange(-0.5, 0.5));
-      const type = randomRange(0, 1) <= 0.25 ? TransactionTypeEnum.SELL : TransactionTypeEnum.BUY;
-      const quantity = (type === TransactionTypeEnum.BUY ? 1 : -1) * (paid / pricePerCoin);
-
-      return {
-        coin,
-        quantity: toDBValue(quantity),
-        pricePerCoin: toDBValue(pricePerCoin),
-        type,
-        date: getRandomPastDate(365),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-    });
-
-  while (quantity > 0) {
-    const chunkRecords = generateRecords(Math.min(chunkSize, quantity));
-    await db.insert(transactions).values(chunkRecords);
-    quantity -= chunkSize;
-  }
-}
-
 export async function addTransaction(transaction: TransactionData) {
   const db = dbDrizzle.getDbInstance();
   return db.insert(transactions).values({
@@ -133,6 +101,13 @@ export async function deleteTransaction(id: number) {
 export async function deleteAllTransactions() {
   const db = dbDrizzle.getDbInstance();
   return db.delete(transactions);
+}
+
+export async function getAllTransactions() {
+  const db = dbDrizzle.getDbInstance();
+  const data = await db.select().from(transactions).orderBy(transactions.date);
+
+  return processTransactionsListFromDb(data as Transaction[]);
 }
 
 export interface TransactionCountGroupedByCoin {

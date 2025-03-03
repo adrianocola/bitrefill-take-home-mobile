@@ -31,7 +31,7 @@ export default function TransactionRoute() {
         </Link>
       ),
     });
-  }, [editTransaction, navigation]);
+  }, [coin, editTransaction, navigation]);
 
   if (editTransaction) {
     return <TransactionLoader transactionId={parseInt(transactionId, 10)} />;

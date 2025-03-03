@@ -23,11 +23,11 @@ export interface CoinData {
 }
 
 export const CoinUsdPrices: Record<CoinsEnum, number> = {
-  [CoinsEnum.BTC]: 84107,
-  [CoinsEnum.ETH]: 2216,
-  [CoinsEnum.ADA]: 0.631,
-  [CoinsEnum.XRP]: 2.14,
-  [CoinsEnum.LTC]: 127.72,
+  [CoinsEnum.BTC]: 65000,
+  [CoinsEnum.ETH]: 1600,
+  [CoinsEnum.ADA]: 1.1,
+  [CoinsEnum.XRP]: 0.89,
+  [CoinsEnum.LTC]: 190.72,
   [CoinsEnum.BNB]: 592.49,
   [CoinsEnum.SOL]: 140.48,
   [CoinsEnum.DOGE]: 0.203,

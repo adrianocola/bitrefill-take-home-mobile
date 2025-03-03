@@ -41,6 +41,9 @@ export default function RootLayout() {
             screenOptions={{
               headerBackButtonDisplayMode: 'minimal',
               headerTintColor: Colors.$textDefault,
+              headerStyle: {
+                backgroundColor: Colors.$backgroundDefault,
+              },
             }}>
             <Stack.Screen name="index" options={{headerShown: false}} />
             <Stack.Screen

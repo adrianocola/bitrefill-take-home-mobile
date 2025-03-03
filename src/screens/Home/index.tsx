@@ -11,6 +11,7 @@ import Animated, {
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
+  useSharedValue,
 } from 'react-native-reanimated';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Colors, FloatingButton, Image, Text, View} from 'react-native-ui-lib';
@@ -28,6 +29,7 @@ import {PortfolioOverTime} from './PortfolioOverTime';
 export function HomeScreen() {
   const {top} = useSafeAreaInsets();
   const animatedRef = useAnimatedRef<Animated.ScrollView>();
+  const animatedHeaderColor = useSharedValue(Colors.$backgroundDefault);
   const scrollOffset = useScrollViewOffset(animatedRef);
 
   const {myCoins, allTransactions, totalBalance} = useBalanceGroupedByCoin();
@@ -37,8 +39,13 @@ export function HomeScreen() {
   }));
 
   const headerAnimatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      scrollOffset.value,
+      [0, 200],
+      ['transparent', animatedHeaderColor.value],
+    ),
     shadowColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#222222']),
-    borderBottomColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#333333']),
+    borderBottomColor: interpolateColor(scrollOffset.value, [0, 200], ['#000000', '#222222']),
   }));
 
   const plusIconAnimatedStyle = useAnimatedStyle(() => ({

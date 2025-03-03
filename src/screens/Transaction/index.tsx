@@ -202,19 +202,18 @@ export function TransactionScreen({
             )}
           </View>
         </KeyboardAwareScrollView>
-        <FloatingButton
-          visible
-          bottomMargin={50}
-          fullWidth
-          button={{
-            label: transactionId ? 'Update Transaction' : `Add ${type} Transaction`,
-            backgroundColor: buttonColor,
-            color: buttonTextColor,
-            disabled: !canSubmit,
-            onPress: onSaveTransaction,
-          }}
-        />
       </KeyboardAvoidingView>
+      <FloatingButton
+        visible
+        bottomMargin={50}
+        button={{
+          label: transactionId ? 'Update Transaction' : `Add ${type} Transaction`,
+          backgroundColor: buttonColor,
+          color: buttonTextColor,
+          disabled: !canSubmit,
+          onPress: onSaveTransaction,
+        }}
+      />
     </Screen>
   );
 }

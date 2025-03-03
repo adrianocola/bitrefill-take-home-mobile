@@ -14,9 +14,10 @@ import {formatNumber} from '@/utils/number';
 
 import {insertRandomTransactions} from './insertRandomTransactions';
 
-const counts = [1, 10, 100, 1_000];
+const counts = [1, 10, 100];
 
 export function DebugScreen() {
+  const [loading, setLoading] = useState(false);
   const [transactionsCountGroupedByCoin, setTransactionsCountGroupedByCoin] = useState<
     TransactionCountGroupedByCoin[]
   >([]);
@@ -32,18 +33,17 @@ export function DebugScreen() {
   }, []);
 
   const onInsertRandomTransactions = async (count: number) => {
+    setLoading(true);
     const start = Date.now();
     await insertRandomTransactions(count);
     Alert.alert(
       'Success',
       `Inserted ${formatNumber(count)} transactions in ${Date.now() - start} ms`,
     );
-    setTimeout(
-      () => {
-        fetchData();
-      },
-      Math.min(count, 1000),
-    );
+    setTimeout(() => {
+      fetchData();
+      setLoading(false);
+    }, count);
   };
 
   const onResetDB = async () => {
@@ -51,6 +51,7 @@ export function DebugScreen() {
     await deleteAllTransactions();
     await initializeTransactions();
     Alert.alert('Success', `DB Cleared in ${Date.now() - start} ms`);
+    await fetchData();
   };
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export function DebugScreen() {
               marginT-20
               label={formatNumber(count)}
               animateLayout
+              disabled={loading}
               onPress={() => onInsertRandomTransactions(count)}
             />
           ))}
@@ -87,6 +89,7 @@ export function DebugScreen() {
             marginT-40
             label="Reset DB"
             animateLayout
+            disabled={loading}
             onPress={onResetDB}
           />
         </View>

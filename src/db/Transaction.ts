@@ -130,7 +130,7 @@ export function useTransaction(id: number) {
 
 export function useAllTransactions() {
   const db = dbDrizzle.getDbInstance();
-  const {data} = useLiveQuery(db.select().from(transactions));
+  const {data} = useLiveQuery(db.select().from(transactions).orderBy(transactions.date));
 
   return processTransactionsListFromDb(data as Transaction[]);
 }

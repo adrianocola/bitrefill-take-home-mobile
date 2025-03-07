@@ -159,7 +159,7 @@ export function useTransactionsIdsByCoinPaginated(coin: CoinsEnum) {
 
   const nextPage = useCallback(
     async (reset = false) => {
-      if (fetchingRef.current || !haveMoreRef.current) return;
+      if (!reset && (fetchingRef.current || !haveMoreRef.current)) return;
 
       fetchingRef.current = true;
 
